@@ -12,7 +12,7 @@ class BloqueHorario extends Model
 
     protected $table = 'bloque_horario';
     protected $primaryKey = 'id_bloque';
-
+    public $timestamps = false;
     protected $fillable = [
         'hora_inicio',
         'hora_fin',

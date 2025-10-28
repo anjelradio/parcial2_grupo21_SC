@@ -15,6 +15,8 @@ class Docente extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    public $timestamps = false;
+    
     protected $fillable = [
         'codigo_docente',
         'user_id',

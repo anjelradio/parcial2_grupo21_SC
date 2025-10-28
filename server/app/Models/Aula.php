@@ -13,7 +13,7 @@ class Aula extends Model
     protected $primaryKey = 'nro_aula';
     public $incrementing = false;
     protected $keyType = 'string';
-
+    public $timestamps = false;
     protected $fillable = [
         'nro_aula',
         'tipo',

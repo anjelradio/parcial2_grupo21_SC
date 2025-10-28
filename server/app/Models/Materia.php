@@ -12,7 +12,7 @@ class Materia extends Model
     
     protected $table = 'materia';
     protected $primaryKey = 'id_materia';
-
+    public $timestamps = false;
     protected $fillable = ['sigla', 'nombre'];
 
     public function grupos()

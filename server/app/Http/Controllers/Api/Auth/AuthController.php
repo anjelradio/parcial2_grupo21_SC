@@ -21,15 +21,25 @@ class AuthController extends Controller
     }
 
     /**
-     * Login de docente
+     * Login unificado (detecta si es código o email)
      */
     public function login(LoginRequest $request)
     {
         try {
-            $data = $this->authService->loginWithCodigoDocente(
-                $request->codigo_docente,
-                $request->password
-            );
+            // Detectar tipo de login
+            if ($request->has('codigo_docente')) {
+                // Login con código (DOCENTE)
+                $data = $this->authService->loginWithCodigoDocente(
+                    $request->codigo_docente,
+                    $request->password
+                );
+            } else {
+                // Login con email (ADMIN o AUTORIDAD)
+                $data = $this->authService->loginWithEmail(
+                    $request->email,
+                    $request->password
+                );
+            }
 
             return $this->success($data, 'Inicio de sesión exitoso');
             

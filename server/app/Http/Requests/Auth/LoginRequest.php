@@ -15,8 +15,10 @@ class LoginRequest extends FormRequest
 
     public function rules(): array
     {
+        // Si viene email, valida email. Si viene codigo_docente, valida codigo
         return [
-            'codigo_docente' => 'required|string|max:10',
+            'email' => 'required_without:codigo_docente|email|max:100',
+            'codigo_docente' => 'required_without:email|string|max:10',
             'password' => 'required|string|min:4',
         ];
     }
@@ -24,10 +26,12 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'codigo_docente.required' => 'El código de docente es obligatorio',
+            'email.required_without' => 'El email o código de docente es obligatorio',
+            'email.email' => 'Debe ser un email válido',
+            'codigo_docente.required_without' => 'El código de docente o email es obligatorio',
             'codigo_docente.max' => 'El código no puede tener más de 10 caracteres',
             'password.required' => 'La contraseña es obligatoria',
-            'password.min' => 'La contraseña debe tener al menos 6 caracteres',
+            'password.min' => 'La contraseña debe tener al menos 4 caracteres',
         ];
     }
 
