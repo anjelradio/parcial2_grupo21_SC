@@ -12,7 +12,7 @@ class PermisoDocente extends Model
     
     protected $table = 'permiso_docente';
     protected $primaryKey = 'id_permiso';
-
+    public $timestamps = false;
     protected $fillable = [
         'codigo_docente',
         'documento_evidencia',

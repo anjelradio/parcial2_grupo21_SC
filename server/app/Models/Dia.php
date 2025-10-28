@@ -11,7 +11,7 @@ class Dia extends Model
 
     protected $table = 'dia';
     protected $primaryKey = 'id_dia';
-
+    public $timestamps = false;
     protected $fillable = [
         'nombre',
     ];

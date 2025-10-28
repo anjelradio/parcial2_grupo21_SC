@@ -11,7 +11,7 @@ class Asignacion extends Model
 
     protected $table = 'asignacion';
     protected $primaryKey = 'id_asignacion';
-
+    public $timestamps = false;
     protected $fillable = [
         'codigo_docente',
         'id_grupo',

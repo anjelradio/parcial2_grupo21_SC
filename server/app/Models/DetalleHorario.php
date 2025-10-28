@@ -11,7 +11,7 @@ class DetalleHorario extends Model
 
     protected $table = 'detalle_horario';
     protected $primaryKey = 'id_detallehorario';
-
+    public $timestamps = false;
     protected $fillable = [
         'id_asignacion',
         'nro_aula',

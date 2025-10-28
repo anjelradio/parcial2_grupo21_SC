@@ -11,7 +11,7 @@ class SolicitudAula extends Model
 
     protected $table = 'solicitud_aula';
     protected $primaryKey = 'id_solicitud';
-
+    public $timestamps = false;
     protected $fillable = [
         'id_asignacion',
         'nro_aula',

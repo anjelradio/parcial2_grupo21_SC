@@ -42,18 +42,15 @@ class AuthController extends Controller
             }
 
             return $this->success($data, 'Inicio de sesión exitoso');
-            
         } catch (ValidationException $e) {
+            $errors = $e->errors();
+
+            // Si hay un único mensaje, lo tomamos directo
+            $firstError = collect($errors)->flatten()->first();
+
             return $this->error(
-                'Credenciales incorrectas',
-                401,
-                $e->errors()
-            );
-        } catch (\Exception $e) {
-            return $this->error(
-                'Error en el servidor',
-                500,
-                config('app.debug') ? ['error' => $e->getMessage()] : null
+                $firstError ?? 'Credenciales incorrectas',
+                401
             );
         }
     }

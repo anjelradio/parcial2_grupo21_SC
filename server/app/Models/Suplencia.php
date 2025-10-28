@@ -11,7 +11,7 @@ class Suplencia extends Model
 
     protected $table = 'suplencia';
     protected $primaryKey = 'id_suplencia';
-
+    public $timestamps = false;
     protected $fillable = [
         'cod_titular',
         'cod_suplente',
