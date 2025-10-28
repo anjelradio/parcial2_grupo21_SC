@@ -9,12 +9,9 @@ import {
   Building2,
   BookOpen,
   ShieldCheck,
-  ClipboardList,
   User,
-  LogOut,
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useAppStore } from "../../stores/useAppStore";
+import { NavLink } from "react-router-dom";
 import type { Usuario } from "../../types";
 
 interface TopBarProps {
@@ -22,8 +19,6 @@ interface TopBarProps {
 }
 
 export default function TopBar({ user }: TopBarProps) {
-  const navigate = useNavigate();
-  const { logout } = useAppStore();
 
   // Determinar basePath según el rol
   const getBasePath = () => {

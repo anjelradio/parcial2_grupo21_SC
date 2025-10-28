@@ -2,7 +2,6 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Loading from "../components/ui/Loading";
 import Layout from "../layouts/Layout";
-import Perfil from "../pages/Shared/Perfil/Perfil";
 
 // Page Login
 const Login = lazy(() => import("../pages/Autenticacion/Login"));
@@ -20,9 +19,19 @@ const Usuarios = lazy(() => import("../pages/Admin/Usuarios/Usuarios"));
 const GestionAcademica = lazy(
   () => import("../pages/Shared/GestionAcademica/GestionAcademica")
 );
+const Materias = lazy(
+  () => import("../pages/Shared/GestionAcademica/views/Materias/Materias")
+);
+const Grupos = lazy(
+  () => import("../pages/Shared/GestionAcademica/views/Grupos/Grupos")
+);
+const Aulas = lazy(
+  () => import("../pages/Shared/GestionAcademica/views/Aulas/Aulas")
+);
 const ControlDocente = lazy(
   () => import("../pages/Shared/ControlDocente/ControlDocente")
 );
+const Perfil = lazy(() => import("../pages/Shared/Perfil/Perfil"));
 
 function AppRouter() {
   return (
@@ -47,8 +56,6 @@ function AppRouter() {
           }
         />
 
-
-        
         <Route element={<Layout />}>
           {/* Rutas docente */}
           <Route path="docente"></Route>
@@ -66,7 +73,6 @@ function AppRouter() {
                 </Suspense>
               }
             />
-
             <Route
               path="gestion-academica"
               element={
@@ -75,7 +81,6 @@ function AppRouter() {
                 </Suspense>
               }
             />
-
             <Route
               path="asignaciones"
               element={
@@ -99,6 +104,34 @@ function AppRouter() {
               element={
                 <Suspense fallback={<Loading />}>
                   <Usuarios />
+                </Suspense>
+              }
+            />
+          </Route>
+          {/* Rutas compartidas */}
+
+          <Route path="gestion-academica">
+            <Route
+              path="gestionar-materias"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <Materias />
+                </Suspense>
+              }
+            />
+            <Route
+              path="gestionar-grupos"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <Grupos />
+                </Suspense>
+              }
+            />
+            <Route
+              path="gestionar-aulas"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <Aulas />
                 </Suspense>
               }
             />

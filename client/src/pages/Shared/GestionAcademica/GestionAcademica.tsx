@@ -1,5 +1,44 @@
+import { useEffect } from "react";
 import { BookOpen, Users, Building2, CheckCircle, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAppStore } from "../../../stores/useAppStore";
+
 function GestionAcademica() {
+  const navigate = useNavigate();
+  const {
+    fetchAulas,
+    fetchGrupos,
+    fetchMaterias,
+    hasLoadedAulas,
+    hasLoadedGrupos,
+    hasLoadedMaterias,
+    setGlobalLoading,
+    materias,
+    grupos,
+    aulas
+  } = useAppStore();
+
+  useEffect(() => {
+    const cargar = async () => {
+      if (!hasLoadedAulas || !hasLoadedGrupos || !hasLoadedMaterias)
+        setGlobalLoading(true);
+      await Promise.all([fetchAulas(), fetchGrupos(), fetchMaterias()]);
+      setGlobalLoading(false);
+    };
+    cargar();
+  }, [
+    fetchAulas,
+    fetchGrupos,
+    fetchMaterias,
+    setGlobalLoading,
+    hasLoadedAulas,
+    hasLoadedGrupos,
+    hasLoadedMaterias,
+  ]);
+
+  const totalMaterias = materias ? materias.length : 0
+  const totalGrupos = grupos ? grupos.length : 0
+  const totalAulas = aulas ? aulas.length : 0
   return (
     <div className="space-y-8">
       <div className="mb-6">
@@ -10,102 +49,74 @@ function GestionAcademica() {
       </div>
 
       {/* Grid de secciones */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Materias */}
-        <div
-          className="bg-white p-6 shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl"
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Botón Materias */}
+        <button
+          onClick={() => navigate("/gestion-academica/gestionar-materias")}
+          className="bg-[#226c8f] p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group"
           style={{ borderRadius: "8px" }}
         >
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex flex-col items-center gap-4">
             <div
-              className="p-3 bg-[#226c8f]/10"
+              className="p-4 bg-white/20 group-hover:bg-white/30 transition-all"
               style={{ borderRadius: "8px" }}
             >
-              <BookOpen className="w-8 h-8 text-[#226c8f]" />
+              <BookOpen className="w-12 h-12 text-white" />
             </div>
-            <h3 className="text-gray-900">Materias</h3>
+            <div className="text-center">
+              <h3 className="text-white text-xl mb-2">Materias</h3>
+              <p className="text-white/80 text-sm">
+                {totalMaterias} materias registradas
+              </p>
+            </div>
           </div>
-          <p className="text-sm text-gray-600 mb-4">28 materias registradas</p>
-          <div className="space-y-2">
-            <button
-              className="w-full py-2 px-4 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors text-sm text-left"
-              style={{ borderRadius: "8px" }}
-            >
-              Ver Listado General
-            </button>
-            <button
-              className="w-full py-2 px-4 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors text-sm text-left"
-              style={{ borderRadius: "8px" }}
-            >
-              Materias Detalladas
-            </button>
-          </div>
-        </div>
+        </button>
 
-        {/* Grupos */}
-        <div
-          className="bg-white p-6 shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl"
+        {/* Botón Grupos */}
+        <button
+          onClick={() => navigate("/gestion-academica/gestionar-grupos")}
+          className="bg-[#226c8f] p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group"
           style={{ borderRadius: "8px" }}
         >
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex flex-col items-center gap-4">
             <div
-              className="p-3 bg-[#226c8f]/10"
+              className="p-4 bg-white/20 group-hover:bg-white/30 transition-all"
               style={{ borderRadius: "8px" }}
             >
-              <Users className="w-8 h-8 text-[#226c8f]" />
+              <Users className="w-12 h-12 text-white" />
             </div>
-            <h3 className="text-gray-900">Grupos</h3>
+            <div className="text-center">
+              <h3 className="text-white text-xl mb-2">Grupos</h3>
+              <p className="text-white/80 text-sm">
+                {totalGrupos} grupos activos
+              </p>
+            </div>
           </div>
-          <p className="text-sm text-gray-600 mb-4">18 grupos activos</p>
-          <div className="space-y-2">
-            <button
-              className="w-full py-2 px-4 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors text-sm text-left"
-              style={{ borderRadius: "8px" }}
-            >
-              Ver Todos los Grupos
-            </button>
-            <button
-              className="w-full py-2 px-4 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors text-sm text-left"
-              style={{ borderRadius: "8px" }}
-            >
-              Gestionar Grupos
-            </button>
-          </div>
-        </div>
+        </button>
 
-        {/* Aulas */}
-        <div
-          className="bg-white p-6 shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl"
+        {/* Botón Aulas */}
+        <button
+          onClick={() => navigate("/gestion-academica/gestionar-aulas")}
+          className="bg-[#226c8f] p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group"
           style={{ borderRadius: "8px" }}
         >
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex flex-col items-center gap-4">
             <div
-              className="p-3 bg-[#226c8f]/10"
+              className="p-4 bg-white/20 group-hover:bg-white/30 transition-all"
               style={{ borderRadius: "8px" }}
             >
-              <Building2 className="w-8 h-8 text-[#226c8f]" />
+              <Building2 className="w-12 h-12 text-white" />
             </div>
-            <h3 className="text-gray-900">Aulas</h3>
+            <div className="text-center">
+              <h3 className="text-white text-xl mb-2">Aulas</h3>
+              <p className="text-white/80 text-sm">
+                {totalAulas} aulas disponibles
+              </p>
+            </div>
           </div>
-          <p className="text-sm text-gray-600 mb-4">12 aulas disponibles</p>
-          <div className="space-y-2">
-            <button
-              className="w-full py-2 px-4 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors text-sm text-left"
-              style={{ borderRadius: "8px" }}
-            >
-              Ver Detalles
-            </button>
-            <button
-              className="w-full py-2 px-4 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors text-sm text-left"
-              style={{ borderRadius: "8px" }}
-            >
-              Listado General
-            </button>
-          </div>
-        </div>
+        </button>
       </div>
 
-      
       {/* Bloques y Días Académicos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div
@@ -170,8 +181,6 @@ function GestionAcademica() {
           </div>
         </div>
       </div>
-
-
     </div>
   );
 }
