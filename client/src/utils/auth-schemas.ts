@@ -7,10 +7,10 @@ export const UsuarioSchema = z.object({
   apellido_paterno: z.string(),
   apellido_materno: z.string(),
   nombre_completo: z.string(),
-  email: z.string().email(),
+  email: z.string().regex(/^[^@\s]+@[^@\s]+$/, "Formato de correo inválido"),
   rol: z.enum(["DOCENTE", "ADMIN", "AUTORIDAD"]),
-  codigo_docente: z.string().optional(),
-  profesion: z.string().optional().nullable(),
+  codigo_docente: z.string().nullable().optional(), 
+  profesion: z.string().nullable().optional(), 
 });
 
 // ------ ESQUEMA DE TOKENS ------
@@ -49,4 +49,24 @@ export const ErrorAPIResponseSchema = z.object({
   ok: z.literal(false),
   message: z.string(),
   errors: z.record(z.string(), z.array(z.string())).optional(),
+});
+
+// ------ ESQUEMAS PERFIL ------
+// Datos que el usuario puede actualizar
+export const UpdatePersonalInfoSchema = z.object({
+  nombre: z.string().min(1),
+  apellido_paterno: z.string().min(1),
+  apellido_materno: z.string().min(1),
+});
+
+export const UpdatePasswordSchema = z.object({
+  password_actual: z.string().min(4),
+  password_nueva: z.string().min(4),
+  password_confirmacion: z.string().min(4),
+});
+
+export const UpdateProfileResponseSchema = z.object({
+  ok: z.boolean(),
+  message: z.string(),
+  data: UsuarioSchema.nullable(),
 });

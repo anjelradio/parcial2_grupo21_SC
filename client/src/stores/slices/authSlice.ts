@@ -32,6 +32,8 @@ export type AuthSliceType = {
   validateSession: () => Promise<void>;
   clearLoginResponse: () => void;
   clearLogoutResponse: () => void;
+
+  setUser: (newUserData: Partial<Usuario>) => void;
 };
 
 export const createAuthSlice: StateCreator<AuthSliceType> = (set, get) => ({
@@ -190,4 +192,15 @@ export const createAuthSlice: StateCreator<AuthSliceType> = (set, get) => ({
 
   clearLoginResponse: () => set({ loginResponse: initialResponse }),
   clearLogoutResponse: () => set({ logoutResponse: initialResponse }),
+
+  setUser: (newUserData: Partial<Usuario>) => {
+    const currentUser = get().user;
+    if (!currentUser) return;
+    set({
+      user: {
+        ...currentUser,
+        ...newUserData,
+      },
+    });
+  },
 });

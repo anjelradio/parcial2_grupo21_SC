@@ -12,6 +12,9 @@ use App\Http\Controllers\Api\Asignaciones\AsignacionController;
 use App\Http\Controllers\Api\PermisosDocente\PermisoDocenteController;
 use App\Http\Controllers\Api\Suplencias\SuplenciaController;
 use App\Http\Controllers\Api\SolicitudesAula\SolicitudAulaController;
+use App\Http\Controllers\Api\Auth\UserProfileController;
+use App\Http\Controllers\Api\Auth\PasswordResetController;
+
 
 
 use App\Http\Controllers\Api\Bitacora\BitacoraController;
@@ -28,7 +31,9 @@ use App\Http\Controllers\Api\Bitacora\BitacoraController;
 // ==========================================
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/forgot-password', [\App\Http\Controllers\Api\Auth\PasswordResetController::class, 'reset']);
+    Route::post('/forgot-password',[PasswordResetController::class, 'reset']);
+    Route::put('/update-personal-info/{id}',[UserProfileController::class, 'updatePersonalInfo']);
+    Route::put('/update-password/{id}',[UserProfileController::class, 'updatePassword']);
 });
 
 // ==========================================
@@ -43,7 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
-    // Rutas de gestión de usuarios (solo ADMIN)
+    //CRUD DE USUARIOS
     Route::prefix('users')->middleware('check.admin')->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/create', [UserController::class, 'store']);

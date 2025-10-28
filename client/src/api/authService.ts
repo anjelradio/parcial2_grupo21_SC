@@ -3,8 +3,9 @@ import {
   LoginAPIResponseSchema,
   MeAPIResponseSchema,
   LogoutAPIResponseSchema,
+  UpdateProfileResponseSchema,
 } from "../utils/auth-schemas";
-import type { LoginForm } from "../types";
+import type { LoginForm, UpdatePassword, UpdatePersonalInfo } from "../types";
 import { API_BASE_URL } from "../config/api";
 
 const BASE_URL = `${API_BASE_URL}/auth`;
@@ -129,4 +130,55 @@ function handleAxiosError(error: unknown, action: string) {
     message: `Error inesperado al ${action}`,
     data: null,
   };
+}
+
+/**
+ * Perfil - Update info y reset password
+ */
+export async function updatePersonalInfo(id: number, formData: UpdatePersonalInfo) {
+  const url = `${BASE_URL}/update-personal-info/${id}`;
+  try {
+    const { data } = await axios.put(url, formData, {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      validateStatus: () => true,
+    });
+
+    const result = UpdateProfileResponseSchema.safeParse(data);
+    return result.success
+      ? result.data
+      : {
+          ok: false,
+          message: data?.message || "Respuesta inválida del servidor",
+          data: null,
+        };
+  } catch (error) {
+    return handleAxiosError(error, "actualizar información personal");
+  }
+}
+
+export async function updatePassword(id: number, formData: UpdatePassword) {
+  const url = `${BASE_URL}/update-password/${id}`;
+  try {
+    const { data } = await axios.put(url, formData, {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      validateStatus: () => true,
+    });
+
+    const result = UpdateProfileResponseSchema.safeParse(data);
+    return result.success
+      ? result.data
+      : {
+          ok: false,
+          message: data?.message || "Respuesta inválida del servidor",
+          data: null,
+        };
+  } catch (error) {
+    return handleAxiosError(error, "actualizar contraseña");
+  }
 }

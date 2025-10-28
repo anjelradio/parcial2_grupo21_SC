@@ -5,7 +5,11 @@ import {
   LoginAPIResponseSchema,
   MeAPIResponseSchema,
   LogoutAPIResponseSchema,
+  UpdatePersonalInfoSchema,
+  UpdatePasswordSchema,
+  UpdateProfileResponseSchema,
 } from "../utils/auth-schemas";
+import type { UserMutationResponseSchema, UsersListResponseSchema } from "../utils/user-schemas";
 
 // ------ TIPOS INFERIDOS ------
 export type Usuario = z.infer<typeof UsuarioSchema>;
@@ -38,3 +42,32 @@ export function esLoginConCodigo(
 export function esLoginConEmail(data: LoginForm): data is LoginWithEmailForm {
   return "email" in data;
 }
+
+
+// ------ TYPE PERFIL ------
+export type UpdatePersonalInfo = z.infer<typeof UpdatePersonalInfoSchema>;
+export type UpdatePassword = z.infer<typeof UpdatePasswordSchema>;
+export type UpdateProfileResponse = z.infer<typeof UpdateProfileResponseSchema>;
+
+// ------ TIPOS PARA GESTIÓN DE USUARIOS ------
+export type CreateUserData = {
+  nombre: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  email: string;
+  password: string;
+  rol: "ADMIN" | "DOCENTE" | "AUTORIDAD";
+  profesion?: string; // Solo para docentes
+};
+
+export type UpdateUserData = {
+  nombre: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  email: string;
+  rol: "ADMIN" | "DOCENTE" | "AUTORIDAD";
+  profesion?: string; // Solo para docentes
+};
+
+export type UsersListResponse = z.infer<typeof UsersListResponseSchema>;
+export type UserMutationResponse = z.infer<typeof UserMutationResponseSchema>;

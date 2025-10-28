@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Loading from "../components/ui/Loading";
 import Layout from "../layouts/Layout";
+import Perfil from "../pages/Shared/Perfil/Perfil";
 
 // Page Login
 const Login = lazy(() => import("../pages/Autenticacion/Login"));
@@ -36,6 +37,17 @@ function AppRouter() {
             </Suspense>
           }
         />
+
+        <Route
+          path="/perfil"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Perfil />
+            </Suspense>
+          }
+        />
+
+
         
         <Route element={<Layout />}>
           {/* Rutas docente */}

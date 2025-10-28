@@ -61,9 +61,17 @@ export default function TopBar({ user }: TopBarProps) {
       case "ADMIN":
         return [
           { id: "inicio", label: "INICIO", icon: Home },
-          { id: "gestion-academica", label: "GESTIÓN ACADÉMICA", icon: Building2 },
+          {
+            id: "gestion-academica",
+            label: "GESTIÓN ACADÉMICA",
+            icon: Building2,
+          },
           { id: "asignaciones", label: "ASIGNACIONES", icon: BookOpen },
-          { id: "control-docente", label: "CONTROL DOCENTE", icon: ShieldCheck },
+          {
+            id: "control-docente",
+            label: "CONTROL DOCENTE",
+            icon: ShieldCheck,
+          },
           { id: "usuarios", label: "USUARIOS", icon: Users },
         ];
       default:
@@ -72,8 +80,6 @@ export default function TopBar({ user }: TopBarProps) {
   };
 
   const tabs = getTabsByRole();
-
-
 
   // Obtener el nombre del rol formateado
   const getRoleName = () => {
@@ -91,7 +97,7 @@ export default function TopBar({ user }: TopBarProps) {
 
   return (
     <header className="bg-[#2c415a] border-b border-[#226c8f]/20 shadow-md sticky top-0 z-40">
-       <div className="container mx-auto px-8 lg:px-16 py-2 flex items-center justify-between gap-6">
+      <div className="container mx-auto px-8 lg:px-16 py-2 flex items-center justify-between gap-6">
         {/* --- LOGO IZQUIERDA --- */}
         <div className="flex items-center">
           <img
@@ -158,9 +164,7 @@ export default function TopBar({ user }: TopBarProps) {
         <div className="flex items-center gap-4">
           <div className="hidden md:flex flex-col items-end">
             <span className="text-white text-sm tracking-wide">
-              {user.rol === "DOCENTE" 
-                ? `Hola, ${user.nombre}` 
-                : user.nombre}
+              {user.rol === "DOCENTE" ? `Hola, ${user.nombre}` : user.nombre}
             </span>
             <span className="text-gray-400 text-xs tracking-wider">
               {getRoleName()}
@@ -168,14 +172,13 @@ export default function TopBar({ user }: TopBarProps) {
           </div>
 
           {/* Botón Usuario */}
-          <button
+          <NavLink
+            to={`/perfil`}
             className="w-11 h-11 bg-[#226c8f] rounded-full flex items-center justify-center ring-2 ring-[#226c8f]/30 hover:ring-[#226c8f]/60 hover:scale-105 transition-all duration-300 cursor-pointer"
             aria-label="Perfil de usuario"
           >
             <User className="w-5 h-5 text-white" />
-          </button>
-
-          
+          </NavLink>
         </div>
       </div>
     </header>
