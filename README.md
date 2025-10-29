@@ -1,43 +1,63 @@
- Sistema Web de Gestión de Carga Horaria y Control de Asistencia Docente – FICCT (PWA Universitaria)
- Descripción general
+#  Sistema Web de Gestión de Carga Horaria y Control de Asistencia Docente – FICCT (PWA Universitaria)
 
-Aplicación web progresiva (PWA) desarrollada para la Facultad de Ingeniería en Ciencias de la Computación y Telecomunicaciones (FICCT – UAGRM), que permite gestionar la carga horaria docente, controlar asistencias mediante QR/GPS, aprobar permisos y suplencias, y administrar la gestión académica (materias, grupos, aulas y horarios).
+##  Descripción General
+Aplicación web progresiva (**PWA**) desarrollada para la **Facultad de Ingeniería en Ciencias de la Computación y Telecomunicaciones (FICCT - UAGRM)**, que permite gestionar la **carga horaria docente**, controlar **asistencias mediante QR y GPS**, **aprobar permisos y suplencias**, y administrar toda la **gestión académica** (materias, grupos, aulas y horarios).
 
- Características principales
+---
 
-✅ Autenticación segura por roles (ADMINISTRADOR, DOCENTE, AUTORIDAD).
-✅ Registro y validación de asistencia docente (QR y GPS).
-✅ Gestión de permisos, suplencias y solicitudes de aula.
-✅ Administración académica: materias, grupos, aulas, horarios y bloques.
-✅ Asignación de carga horaria sin conflictos de horario.
-✅ Paneles dinámicos y estadísticas de asistencia.
-✅ Generación de reportes (PDF / Excel).
-✅ Compatible con móviles (PWA instalable).
+##  Características Principales
+✅ Autenticación segura por roles (ADMINISTRADOR, DOCENTE, AUTORIDAD).  
+✅ Registro y validación de asistencia docente (QR y GPS).  
+✅ Gestión de permisos, suplencias y solicitudes de aula.  
+✅ Administración de materias, grupos, aulas y bloques horarios.  
+✅ Asignación de carga horaria sin conflictos.  
+✅ Paneles y reportes estadísticos en tiempo real.  
+✅ Generación de reportes en PDF / Excel.  
+✅ Instalación como PWA (modo offline y acceso desde dispositivos móviles).  
 
- Arquitectura del Sistema
+---
 
-El sistema sigue una arquitectura en capas, organizada por paquetes funcionales:
+##  Arquitectura del Sistema
+El sistema sigue una arquitectura **por capas** y organizada en **paquetes funcionales**:
 
-Capa / Paquete	Funcionalidad principal
-AUTENTICACIÓN Y SEGURIDAD	Control de inicio de sesión, JWT, bitácora de acceso
-GESTIÓN DE USUARIOS Y ROLES	Administración de cuentas, roles y permisos
-GESTIÓN ACADÉMICA	Materias, grupos, aulas, horarios, bloques
-ASIGNACIONES ACADÉMICAS	Carga horaria docente
-CONTROL DOCENTE	Asistencia, permisos, suplencias y solicitudes de aula
+| Paquete / Capa | Funcionalidad |
+|----------------|----------------|
+| **AUTENTICACIÓN Y SEGURIDAD** | Control de inicio de sesión, roles y bitácora de acceso. |
+| **GESTIÓN DE USUARIOS Y ROLES** | Creación, edición y asignación de roles. |
+| **GESTIÓN ACADÉMICA** | Administración de materias, grupos, aulas, bloques y días. |
+| **ASIGNACIONES ACADÉMICAS** | Carga horaria docente y control de disponibilidad. |
+| **CONTROL DOCENTE** | Registro de asistencias, permisos, suplencias y solicitudes de aula. |
 
- Frontend: React + TypeScript + TailwindCSS
- Backend: Laravel 11 (PHP 8.3) + REST API
- Base de Datos: PostgreSQL (Cloud SQL)
- Despliegue: Google Cloud Run + Firebase Hosting
- Autenticación: JWT y roles por middleware
+ **Frontend:** React + TypeScript + TailwindCSS  
+ **Backend:** Laravel 11 (PHP 8.3) + API REST  
+ **Base de Datos:** PostgreSQL (Cloud SQL)  
+ **Infraestructura Cloud:** Google Cloud Run + Firebase Hosting  
+ **Autenticación:** JWT + Middleware de roles  
 
- Herramientas de desarrollo
-Tipo	Herramienta
-IDE / Entorno	VSCode, Postman, Draw.io
-Modelado UML	StarUML / Lucidchart
-Control de versiones	Git + GitHub
-Despliegue Cloud	Google Cloud Platform (Cloud Run + Cloud SQL)
-Base de datos local	pgAdmin / DBeaver
-Frontend	React + Vite + Zustand + Zod
-Backend	Laravel 11 + PHP
-Testing	PHPUnit / ThunderClient
+---
+
+##  Herramientas de Desarrollo
+
+| Tipo | Herramienta |
+|------|--------------|
+| **IDE / Entorno** | Visual Studio Code |
+| **Modelado UML** | StarUML / Lucidchart / Draw.io |
+| **Control de versiones** | Git + GitHub |
+| **Base de datos local** | pgAdmin / DBeaver |
+| **Testing / API** | Postman / ThunderClient |
+| **Despliegue Cloud** | Google Cloud Platform (Cloud Run + Cloud SQL) |
+| **Frontend** | React + Vite + Zustand + Zod |
+| **Backend** | Laravel 11 + PHP 8.3 |
+
+---
+
+##  Instalación y Ejecución
+
+### 🔹 Backend (Laravel)
+```bash
+cd server
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
