@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { ArrowLeft, BookOpen, School, Users, Search } from "lucide-react";
+import { ArrowLeft, BookOpen, School, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../../../../../stores/useAppStore";
 import AddGrupoForm from "./AddGrupoForm";
 import GrupoCard from "./GrupoCard";
+import { ToastContainer } from "react-toastify";
+import EditGrupo from "./Modals/EditGrupo";
+import DeleteGrupo from "./Modals/DeleteGrupo";
 function Grupos() {
   const { grupos } = useAppStore();
   const navigate = useNavigate();
@@ -94,6 +96,9 @@ function Grupos() {
           <GrupoCard key={grupo.id_grupo} grupo={grupo}/>
         ))}
       </div>
+      <ToastContainer/>
+      <EditGrupo/>
+      <DeleteGrupo/>
     </div>
   );
 }

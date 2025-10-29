@@ -1,11 +1,24 @@
 import { Trash2, Edit, Users } from "lucide-react";
 import type { Grupo } from "../../../../../types";
+import { useAppStore } from "../../../../../stores/useAppStore";
 
 type GrupoCardProps = {
-    grupo: Grupo
-}
+  grupo: Grupo;
+};
 
-function GrupoCard({grupo}:GrupoCardProps) {
+function GrupoCard({ grupo }: GrupoCardProps) {
+  const { selectGrupo, setModal } = useAppStore();
+
+  const handleEdit = () => {
+    selectGrupo(grupo.id_grupo);
+    setModal("editGrupo", true);
+  };
+
+  const handleDelete = () => {
+    selectGrupo(grupo.id_grupo);
+    setModal("deleteGrupo", true);
+  };
+
   return (
     <div
       className="bg-white p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all"
@@ -24,11 +37,7 @@ function GrupoCard({grupo}:GrupoCardProps) {
 
       <div className="flex gap-2 mt-4">
         <button
-        //   onClick={() => {
-        //     setSelectedItem(grupo);
-        //     setShowEditModal(true);
-        //     setEditMode(false);
-        //   }}
+          onClick={handleEdit}
           className="flex-1 px-3 py-2 bg-[#226c8f] text-white hover:bg-[#1a5470] transition-colors flex items-center justify-center gap-2"
           style={{ borderRadius: "8px" }}
         >
@@ -36,10 +45,7 @@ function GrupoCard({grupo}:GrupoCardProps) {
           Editar
         </button>
         <button
-        //   onClick={() => {
-        //     setSelectedItem(grupo);
-        //     setShowDeleteModal(true);
-        //   }}
+          onClick={handleDelete}
           className="flex-1 px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
           style={{ borderRadius: "8px" }}
         >

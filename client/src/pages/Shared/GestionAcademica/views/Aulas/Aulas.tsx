@@ -9,6 +9,9 @@ import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../../../../../stores/useAppStore";
 import AddAulaForm from "./AddAulaForm";
 import AulaCard from "./AulaCard";
+import { ToastContainer } from "react-toastify";
+import EditAula from "./Modals/EditAula";
+import DeleteAula from "./Modals/DeleteAula";
 function Aulas() {
   const navigate = useNavigate();
   const { aulas } = useAppStore();
@@ -113,7 +116,7 @@ function Aulas() {
       {/* Formulario de Nueva Aula */}
       <AddAulaForm />
 
-      {[0,1, 2, 3, 4].map((piso) => {
+      {[0, 1, 2, 3, 4].map((piso) => {
         const aulasDelPiso = aulas.filter((a) =>
           a.nro_aula.startsWith(piso.toString())
         );
@@ -126,17 +129,23 @@ function Aulas() {
                 className="w-1 h-6 bg-[#226c8f]"
                 style={{ borderRadius: "2px" }}
               ></div>
-              <h3 className="text-gray-900"> {piso === 0 ? "Auditorio" : `Piso ${piso}`}</h3>
+              <h3 className="text-gray-900">
+                {" "}
+                {piso === 0 ? "Auditorio" : `Piso ${piso}`}
+              </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {aulasDelPiso.map((aula) => (
-                <AulaCard key={aula.nro_aula} aula={aula}/>
+                <AulaCard key={aula.nro_aula} aula={aula} />
               ))}
             </div>
           </div>
         );
       })}
+      <ToastContainer />
+      <EditAula />
+      <DeleteAula />
     </div>
   );
 }

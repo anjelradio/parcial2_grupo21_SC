@@ -6,6 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
+use App\Models\Asignacion;
+use App\Models\DetalleHorario;
 
 class StoreSuplenciaRequest extends FormRequest
 {
@@ -35,6 +37,95 @@ class StoreSuplenciaRequest extends FormRequest
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            // Validar que el titular de la asignación coincida con cod_titular
+            $this->validarTitularAsignacion($validator);
+            
+            // Validar que el suplente no tenga conflictos de horario
+            $this->validarConflictosHorario($validator);
+        });
+    }
+
+    /**
+     * Validar que el cod_titular coincida con el docente de la asignación
+     */
+    protected function validarTitularAsignacion($validator)
+    {
+        if ($this->id_asignacion && $this->cod_titular) {
+            $asignacion = Asignacion::find($this->id_asignacion);
+            
+            if ($asignacion && $asignacion->codigo_docente !== $this->cod_titular) {
+                $validator->errors()->add(
+                    'cod_titular',
+                    'El código del titular no coincide con el docente de la asignación seleccionada'
+                );
+            }
+        }
+    }
+
+    /**
+     * Validar que el suplente no tenga conflictos de horario
+     */
+    protected function validarConflictosHorario($validator)
+    {
+        if (!$this->id_asignacion || !$this->cod_suplente) {
+            return;
+        }
+
+        // Obtener los horarios de la asignación a suplir
+        $horariosAsignacionSuplir = DetalleHorario::where('id_asignacion', $this->id_asignacion)
+            ->with(['dia', 'bloque'])
+            ->get();
+
+        if ($horariosAsignacionSuplir->isEmpty()) {
+            return; // No hay horarios definidos, no hay conflicto
+        }
+
+        // Obtener todas las asignaciones del suplente como titular
+        $asignacionesSuplente = Asignacion::where('codigo_docente', $this->cod_suplente)
+            ->where('estado', 'Vigente')
+            ->pluck('id_asignacion');
+
+        if ($asignacionesSuplente->isEmpty()) {
+            return; // El suplente no tiene asignaciones como titular
+        }
+
+        // Obtener los horarios del suplente en sus asignaciones como titular
+        $horariosSuplente = DetalleHorario::whereIn('id_asignacion', $asignacionesSuplente)
+            ->with(['dia', 'bloque', 'asignacion.grupo.materia'])
+            ->get();
+
+        // Verificar conflictos
+        foreach ($horariosAsignacionSuplir as $horarioSuplir) {
+            foreach ($horariosSuplente as $horarioSuplente) {
+                // Mismo día
+                if ($horarioSuplir->id_dia === $horarioSuplente->id_dia) {
+                    // Mismo bloque horario
+                    if ($horarioSuplir->id_bloque === $horarioSuplente->id_bloque) {
+                        $dia = $horarioSuplente->dia->nombre ?? 'Desconocido';
+                        $horario = $horarioSuplente->bloque 
+                            ? "{$horarioSuplente->bloque->hora_inicio->format('H:i')} - {$horarioSuplente->bloque->hora_fin->format('H:i')}"
+                            : 'Desconocido';
+                        
+                        $materiaConflicto = $horarioSuplente->asignacion 
+                            && $horarioSuplente->asignacion->grupo 
+                            && $horarioSuplente->asignacion->grupo->materia
+                            ? $horarioSuplente->asignacion->grupo->materia->sigla
+                            : 'Materia desconocida';
+
+                        $validator->errors()->add(
+                            'cod_suplente',
+                            "El docente suplente tiene un conflicto de horario: {$dia} de {$horario} (ya dicta {$materiaConflicto})"
+                        );
+                        return; // Detener al primer conflicto encontrado
+                    }
+                }
+            }
+        }
     }
 
     public function messages(): array

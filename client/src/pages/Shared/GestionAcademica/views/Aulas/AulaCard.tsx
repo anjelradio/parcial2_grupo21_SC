@@ -1,12 +1,25 @@
 import { Badge } from "../../../../../components/ui/badge";
 import { Building2, Edit, Trash2 } from "lucide-react";
 import type { Aula } from "../../../../../types";
+import { useAppStore } from "../../../../../stores/useAppStore";
 
 type AulaCardProps = {
-    aula: Aula
-}
+  aula: Aula;
+};
 
-function AulaCard({aula} : AulaCardProps) {
+function AulaCard({ aula }: AulaCardProps) {
+  const { selectAula, setModal } = useAppStore();
+
+  const handleEdit = () => {
+    selectAula(aula.nro_aula);
+    setModal("editAula", true);
+  };
+
+  const handleDelete = () => {
+    selectAula(aula.nro_aula);
+    setModal("deleteAula", true);
+  };
+
   return (
     <div
       className="bg-white p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all"
@@ -24,6 +37,8 @@ function AulaCard({aula} : AulaCardProps) {
                 ? "bg-green-100 text-green-600"
                 : aula.estado === "Mantenimiento"
                 ? "bg-yellow-100 text-yellow-600"
+                : aula.estado === "En uso"
+                ? "bg-blue-100 text-blue-600"
                 : "bg-red-100 text-red-600"
             }`}
             style={{ borderRadius: "4px" }}
@@ -41,7 +56,7 @@ function AulaCard({aula} : AulaCardProps) {
 
       <div className="flex gap-2 mt-4">
         <button
-          
+          onClick={handleEdit}
           className="flex-1 px-3 py-2 bg-[#226c8f] text-white hover:bg-[#1a5470] transition-colors flex items-center justify-center gap-2"
           style={{ borderRadius: "8px" }}
         >
@@ -49,7 +64,7 @@ function AulaCard({aula} : AulaCardProps) {
           Editar
         </button>
         <button
-          
+          onClick={handleDelete}
           className="flex-1 px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
           style={{ borderRadius: "8px" }}
         >

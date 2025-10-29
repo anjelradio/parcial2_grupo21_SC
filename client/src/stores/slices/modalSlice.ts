@@ -1,6 +1,14 @@
 import type { StateCreator } from "zustand";
 
-export type ModalName = "editUser" | "deleteUser";
+export type ModalName =
+  | "editUser"
+  | "deleteUser"
+  | "editMateria"
+  | "deleteMateria"
+  | "editGrupo"
+  | "deleteGrupo"
+  | "editAula"
+  | "deleteAula";
 
 export type ModalSliceType = {
   modals: Record<ModalName, boolean>;
@@ -16,6 +24,12 @@ export const createModalSlice: StateCreator<ModalSliceType> = (set, get) => ({
   modals: {
     editUser: false,
     deleteUser: false,
+    editMateria: false,
+    deleteMateria: false,
+    editGrupo: false,
+    deleteGrupo: false,
+    editAula: false,
+    deleteAula: false,
   },
   anyModalOpen: false,
   setModal: (modal, open) => {

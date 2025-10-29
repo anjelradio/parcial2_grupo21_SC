@@ -29,6 +29,22 @@ import {
   GrupoMutationResponseSchema,
 } from "../utils/grupo-schemas";
 
+import {
+  DiaSchema,
+  DiasListResponseSchema,
+  DiaMutationResponseSchema,
+  BloqueHorarioSchema,
+  BloquesHorariosListResponseSchema,
+  BloqueHorarioMutationResponseSchema,
+} from "../utils/horario-schemas";
+
+import {
+  AsignacionSchema,
+  AsignacionesListResponseSchema,
+  AsignacionMutationResponseSchema,
+  ConflictosResponseSchema,
+} from "../utils/asignacion-schemas";
+
 // ------ TIPOS INFERIDOS ------
 export type Usuario = z.infer<typeof UsuarioSchema>;
 export type Tokens = z.infer<typeof TokensSchema>;
@@ -125,3 +141,87 @@ export type CreateGrupoData = {
 };
 
 export type UpdateGrupoData = CreateGrupoData;
+
+// ------ TIPOS PARA DÍAS ------
+export type Dia = z.infer<typeof DiaSchema>;
+export type DiasListResponse = z.infer<typeof DiasListResponseSchema>;
+export type DiaMutationResponse = z.infer<typeof DiaMutationResponseSchema>;
+
+export type CreateDiaData = {
+  nombre: string;
+};
+
+export type UpdateDiaData = CreateDiaData;
+
+// ------ TIPOS PARA BLOQUES HORARIOS ------
+export type BloqueHorario = z.infer<typeof BloqueHorarioSchema>;
+export type BloquesHorariosListResponse = z.infer<typeof BloquesHorariosListResponseSchema>;
+export type BloqueHorarioMutationResponse = z.infer<typeof BloqueHorarioMutationResponseSchema>;
+
+export type CreateBloqueHorarioData = {
+  hora_inicio: string; // Formato "HH:mm"
+  hora_fin: string; // Formato "HH:mm"
+};
+
+export type UpdateBloqueHorarioData = CreateBloqueHorarioData;
+
+
+// ------ TIPOS PARA ASIGNACIONES ------
+export type Asignacion = z.infer<typeof AsignacionSchema>;
+export type AsignacionesListResponse = z.infer<typeof AsignacionesListResponseSchema>;
+export type AsignacionMutationResponse = z.infer<typeof AsignacionMutationResponseSchema>;
+export type ConflictosResponse = z.infer<typeof ConflictosResponseSchema>;
+
+// Tipos para los datos anidados
+export type DetalleHorarioInput = {
+  id_dia: number;
+  id_bloque: number;
+  nro_aula: string;
+};
+
+export type CreateAsignacionData = {
+  codigo_docente: string;
+  id_grupo: number;
+  id_gestion: number;
+  estado: "Vigente" | "Finalizada" | "Cancelada";
+  observaciones?: string;
+  detalles_horario: DetalleHorarioInput[];
+};
+
+export type UpdateAsignacionData = CreateAsignacionData;
+
+// Tipos para conflictos
+export type ConflictoDetalle = {
+  tipo: string;
+  mensaje: string;
+};
+
+export type AsignacionConflictiva = {
+  id_asignacion: number;
+  docente: {
+    codigo_docente: string;
+    nombre_completo: string;
+  };
+  grupo: {
+    id_grupo: number;
+    nombre: string;
+    materia: {
+      sigla: string;
+      nombre: string;
+    };
+  };
+  gestion: {
+    anio: number;
+    semestre: number;
+  };
+  detalle_horario: {
+    dia: string;
+    bloque: string;
+    aula: string;
+  };
+};
+
+export type ConflictoAgrupado = {
+  asignacion: AsignacionConflictiva;
+  conflictos: ConflictoDetalle[];
+};

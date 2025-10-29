@@ -5,6 +5,9 @@ import AddMateriaForm from "./AddMateriaForm";
 import MateriaCard from "./MateriaCard";
 import { Input } from "../../../../../components/ui/input";
 import { useAppStore } from "../../../../../stores/useAppStore";
+import { ToastContainer } from "react-toastify";
+import EditMateria from "./Modals/EditMateria";
+import DeleteMateria from "./Modals/DeleteMateria";
 
 function Materias() {
   const { materias } = useAppStore();
@@ -120,6 +123,9 @@ function Materias() {
             <MateriaCard key={materia.id_materia} materia={materia} />
           ))}
       </div>
+      <ToastContainer/>
+      <EditMateria/>
+      <DeleteMateria/>
     </div>
   );
 }
