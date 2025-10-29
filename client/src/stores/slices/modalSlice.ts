@@ -8,7 +8,15 @@ export type ModalName =
   | "editGrupo"
   | "deleteGrupo"
   | "editAula"
-  | "deleteAula";
+  | "deleteAula"
+  | "horarioList"
+  | "editHorario"
+  | "deleteHorario"
+  | "diasList"
+  | "editDia"
+  | "deleteDia"
+  | "editAsignacion"
+  | "deleteAsignacion";
 
 export type ModalSliceType = {
   modals: Record<ModalName, boolean>;
@@ -30,6 +38,14 @@ export const createModalSlice: StateCreator<ModalSliceType> = (set, get) => ({
     deleteGrupo: false,
     editAula: false,
     deleteAula: false,
+    horarioList: false,
+    editHorario: false,
+    deleteHorario: false,
+    diasList: false,
+    editDia: false,
+    deleteDia: false,
+    editAsignacion: false,
+    deleteAsignacion: false,
   },
   anyModalOpen: false,
   setModal: (modal, open) => {

@@ -15,34 +15,29 @@ import {
 const initialResponse = { ok: false, message: "" };
 
 export type AsignacionSliceType = {
-  // Estado principal
   asignaciones: Asignacion[];
   selectedAsignacion: Asignacion | null;
   hasLoadedAsignaciones: boolean;
   isLoadingAsignaciones: boolean;
   asignacionesResponse: { ok: boolean; message: string };
 
-  // CREATE
   createAsignacion: (data: CreateAsignacionData) => Promise<boolean>;
   isCreatingAsignacion: boolean;
   createAsignacionResponse: { ok: boolean; message: string };
   createAsignacionConflictos: ConflictoAgrupado[] | null;
   clearCreateAsignacionResponse: () => void;
 
-  // UPDATE
   updateAsignacion: (id: number, data: UpdateAsignacionData) => Promise<boolean>;
   isUpdatingAsignacion: boolean;
   updateAsignacionResponse: { ok: boolean; message: string };
   updateAsignacionConflictos: ConflictoAgrupado[] | null;
   clearUpdateAsignacionResponse: () => void;
 
-  // DELETE
   deleteAsignacion: (id: number) => Promise<boolean>;
   isDeletingAsignacion: boolean;
   deleteAsignacionResponse: { ok: boolean; message: string };
   clearDeleteAsignacionResponse: () => void;
 
-  // Acciones generales
   fetchAsignaciones: (force?: boolean) => Promise<void>;
   selectAsignacion: (id: number) => void;
   clearSelectedAsignacion: () => void;
@@ -53,7 +48,6 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
   set,
   get
 ) => ({
-  // Estado inicial
   asignaciones: [],
   selectedAsignacion: null,
   hasLoadedAsignaciones: false,
@@ -73,14 +67,20 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
 
   fetchAsignaciones: async (force = false) => {
     const { hasLoadedAsignaciones } = get();
-    if (hasLoadedAsignaciones && !force) return;
+    if (hasLoadedAsignaciones && !force) {
+      console.log("Asignaciones ya cargadas, saltando fetch");
+      return;
+    }
 
+    console.log("Iniciando fetchAsignaciones...");
     set({ isLoadingAsignaciones: true });
 
     try {
       const response = await getAllAsignaciones();
+      console.log("Respuesta de getAllAsignaciones:", response);
 
       if (!response) {
+        console.error("No se recibió respuesta del servidor");
         set({
           isLoadingAsignaciones: false,
           asignacionesResponse: {
@@ -92,6 +92,7 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
       }
 
       if (response.ok && response.data) {
+        console.log("Asignaciones cargadas exitosamente:", response.data.length);
         set({
           asignaciones: response.data,
           hasLoadedAsignaciones: true,
@@ -99,6 +100,7 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
           isLoadingAsignaciones: false,
         });
       } else {
+        console.error("Error en respuesta:", response.message);
         set({
           asignacionesResponse: {
             ok: false,
@@ -128,6 +130,7 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
 
     try {
       const response = await createAsignacion(data);
+      console.log("Respuesta createAsignacion:", response);
 
       if (!response) {
         set({
@@ -140,21 +143,24 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
         return false;
       }
 
-      // Verificar si hay conflictos usando type narrowing
-      if (!response.ok && "data" in response && response.data && "conflictos" in response.data) {
-        set({
-          createAsignacionResponse: {
-            ok: false,
-            message: response.message,
-          },
-          createAsignacionConflictos: response.data.conflictos,
-          isCreatingAsignacion: false,
-        });
-        return false;
+      // Caso: Error con conflictos
+      if (!response.ok && response.data) {
+        const responseData = response.data as any;
+        if (responseData.conflictos && Array.isArray(responseData.conflictos)) {
+          set({
+            createAsignacionResponse: {
+              ok: false,
+              message: response.message,
+            },
+            createAsignacionConflictos: responseData.conflictos,
+            isCreatingAsignacion: false,
+          });
+          return false;
+        }
       }
 
-      // Si la respuesta es exitosa
-      if (response.ok && "data" in response && response.data) {
+      // Caso: Éxito
+      if (response.ok && response.data) {
         const newAsignacion = response.data as Asignacion;
         
         set((state) => ({
@@ -170,6 +176,7 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
         return true;
       }
 
+      // Caso: Error genérico
       set({
         createAsignacionResponse: {
           ok: false,
@@ -200,6 +207,7 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
 
     try {
       const response = await updateAsignacion(id, data);
+      console.log("Respuesta updateAsignacion:", response);
 
       if (!response) {
         set({
@@ -212,21 +220,24 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
         return false;
       }
 
-      // Verificar si hay conflictos usando type narrowing
-      if (!response.ok && "data" in response && response.data && "conflictos" in response.data) {
-        set({
-          updateAsignacionResponse: {
-            ok: false,
-            message: response.message,
-          },
-          updateAsignacionConflictos: response.data.conflictos,
-          isUpdatingAsignacion: false,
-        });
-        return false;
+      // Caso: Error con conflictos
+      if (!response.ok && response.data) {
+        const responseData = response.data as any;
+        if (responseData.conflictos && Array.isArray(responseData.conflictos)) {
+          set({
+            updateAsignacionResponse: {
+              ok: false,
+              message: response.message,
+            },
+            updateAsignacionConflictos: responseData.conflictos,
+            isUpdatingAsignacion: false,
+          });
+          return false;
+        }
       }
 
-      // Si la respuesta es exitosa
-      if (response.ok && "data" in response && response.data) {
+      // Caso: Éxito
+      if (response.ok && response.data) {
         const updatedAsignacion = response.data as Asignacion;
         
         set((state) => ({
@@ -248,6 +259,7 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
         return true;
       }
 
+      // Caso: Error genérico
       set({
         updateAsignacionResponse: {
           ok: false,
@@ -277,6 +289,7 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
 
     try {
       const response = await deleteAsignacion(id);
+      console.log("Respuesta deleteAsignacion:", response);
 
       if (!response) {
         set({

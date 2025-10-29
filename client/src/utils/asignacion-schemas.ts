@@ -132,3 +132,24 @@ export const ConflictosResponseSchema = z.object({
     conflictos: z.array(ConflictoAgrupadoSchema),
   }).nullable(),
 });
+
+
+// ========== ESQUEMAS PARA FORMULARIOS DE ASIGNACIÓN ==========
+export const CreateAsignacionSchema = z.object({
+  codigo_docente: z.string().min(1, "El docente es obligatorio"),
+  id_grupo: z.number().min(1, "El grupo es obligatorio"),
+  id_gestion: z.number().min(1, "La gestión es obligatoria"),
+  estado: z.enum(["Vigente", "Finalizada", "Cancelada"]),
+  observaciones: z.string().optional(),
+  detalles_horario: z
+    .array(
+      z.object({
+        id_dia: z.number().min(1, "El día es obligatorio"),
+        id_bloque: z.number().min(1, "El bloque horario es obligatorio"),
+        nro_aula: z.string().min(1, "El aula es obligatoria"),
+      })
+    )
+    .min(1, "Debe incluir al menos un detalle de horario"),
+});
+
+export const UpdateAsignacionSchema = CreateAsignacionSchema;
