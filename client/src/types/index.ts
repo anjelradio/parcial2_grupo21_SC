@@ -8,6 +8,8 @@ import {
   UpdatePersonalInfoSchema,
   UpdatePasswordSchema,
   UpdateProfileResponseSchema,
+  ForgotPasswordRequestSchema,
+  ForgotPasswordResponseSchema,
 } from "../utils/auth-schemas";
 import type {
   UserMutationResponseSchema,
@@ -44,6 +46,10 @@ import {
   AsignacionMutationResponseSchema,
   ConflictosResponseSchema,
 } from "../utils/asignacion-schemas";
+import type {
+  UpdatePermisoDocenteSchema,
+  UpdateSolicitudAulaSchema,
+} from "../utils/controldocente-schemas";
 
 // ------ TIPOS INFERIDOS ------
 export type Usuario = z.infer<typeof UsuarioSchema>;
@@ -103,11 +109,12 @@ export type UpdateUserData = {
 export type UsersListResponse = z.infer<typeof UsersListResponseSchema>;
 export type UserMutationResponse = z.infer<typeof UserMutationResponseSchema>;
 
-
 // ------ TIPOS PARA MATERIAS ------
 export type Materia = z.infer<typeof MateriaSchema>;
 export type MateriasListResponse = z.infer<typeof MateriasListResponseSchema>;
-export type MateriaMutationResponse = z.infer<typeof MateriaMutationResponseSchema>;
+export type MateriaMutationResponse = z.infer<
+  typeof MateriaMutationResponseSchema
+>;
 
 export type CreateMateriaData = {
   sigla: string;
@@ -155,8 +162,12 @@ export type UpdateDiaData = CreateDiaData;
 
 // ------ TIPOS PARA BLOQUES HORARIOS ------
 export type BloqueHorario = z.infer<typeof BloqueHorarioSchema>;
-export type BloquesHorariosListResponse = z.infer<typeof BloquesHorariosListResponseSchema>;
-export type BloqueHorarioMutationResponse = z.infer<typeof BloqueHorarioMutationResponseSchema>;
+export type BloquesHorariosListResponse = z.infer<
+  typeof BloquesHorariosListResponseSchema
+>;
+export type BloqueHorarioMutationResponse = z.infer<
+  typeof BloqueHorarioMutationResponseSchema
+>;
 
 export type CreateBloqueHorarioData = {
   hora_inicio: string; // Formato "HH:mm"
@@ -165,11 +176,14 @@ export type CreateBloqueHorarioData = {
 
 export type UpdateBloqueHorarioData = CreateBloqueHorarioData;
 
-
 // ------ TIPOS PARA ASIGNACIONES ------
 export type Asignacion = z.infer<typeof AsignacionSchema>;
-export type AsignacionesListResponse = z.infer<typeof AsignacionesListResponseSchema>;
-export type AsignacionMutationResponse = z.infer<typeof AsignacionMutationResponseSchema>;
+export type AsignacionesListResponse = z.infer<
+  typeof AsignacionesListResponseSchema
+>;
+export type AsignacionMutationResponse = z.infer<
+  typeof AsignacionMutationResponseSchema
+>;
 export type ConflictosResponse = z.infer<typeof ConflictosResponseSchema>;
 
 // Tipos para los datos anidados
@@ -225,3 +239,81 @@ export type ConflictoAgrupado = {
   asignacion: AsignacionConflictiva;
   conflictos: ConflictoDetalle[];
 };
+
+export type UpdatePermisoDocenteFormData = z.infer<
+  typeof UpdatePermisoDocenteSchema
+>;
+export type UpdateSolicitudAulaFormData = z.infer<
+  typeof UpdateSolicitudAulaSchema
+>;
+
+// ============================================
+// PERMISOS DOCENTE
+// ============================================
+
+export type PermisoDocente = {
+  id_permiso: number;
+  codigo_docente: string;
+  nombre_docente: string;
+  documento_evidencia: string | null;
+  fecha_inicio: string;
+  fecha_fin: string;
+  motivo: string;
+  estado: "Pendiente" | "Aprobado" | "Rechazado";
+  fecha_solicitud: string;
+  fecha_revision: string | null;
+  observaciones: string | null;
+};
+
+export type UpdatePermisoDocenteData = {
+  estado: "Pendiente" | "Aprobado" | "Rechazado";
+  observaciones?: string;
+};
+
+// ============================================
+// SOLICITUDES AULA
+// ============================================
+
+export type SolicitudAula = {
+  id_solicitud: number;
+  id_asignacion: number;
+  nro_aula: string;
+  fecha_solicitada: string;
+  motivo: string;
+  estado: "Pendiente" | "Aprobada" | "Rechazada";
+  fecha_solicitud: string;
+  observaciones: string | null;
+  aula: string | null;
+  asignacion: {
+    id: number;
+    codigo_docente: string;
+    estado: string;
+  } | null;
+};
+
+export type UpdateSolicitudAulaData = {
+  estado: "Pendiente" | "Aprobada" | "Rechazada";
+  observaciones?: string;
+};
+
+// ============================================
+// RESPUESTAS API
+// ============================================
+
+export type ApiResponse<T = any> = {
+  ok: boolean;
+  message: string;
+  data?: T;
+  errors?: any;
+};
+
+export type ApiErrorResponse = {
+  ok: false;
+  message: string;
+  errors?: any;
+};
+
+
+// ForgotPss
+export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
+export type ForgotPasswordResponse = z.infer<typeof ForgotPasswordResponseSchema>;

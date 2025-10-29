@@ -70,3 +70,25 @@ export const UpdateProfileResponseSchema = z.object({
   message: z.string(),
   data: UsuarioSchema.nullable(),
 });
+
+
+// Schema para el request de forgot password
+export const ForgotPasswordRequestSchema = z.object({
+  email: z.string().email().optional(),
+  codigo_docente: z.string().optional(),
+}).refine(
+  (data) => data.email || data.codigo_docente,
+  {
+    message: "Debe proporcionar un email o código de docente",
+  }
+);
+
+// Schema para la respuesta de forgot password
+export const ForgotPasswordResponseSchema = z.object({
+  ok: z.boolean(),
+  message: z.string(),
+  data: z.object({
+    email: z.string(),
+    message: z.string(),
+  }).nullable(),
+});

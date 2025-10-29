@@ -8,7 +8,6 @@ import {
   Users,
   Building2,
   BookOpen,
-  ClipboardList,
   ShieldCheck,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";

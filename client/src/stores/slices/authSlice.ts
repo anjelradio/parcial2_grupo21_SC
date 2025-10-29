@@ -1,9 +1,10 @@
 import type { StateCreator } from "zustand";
-import type { Usuario, LoginForm } from "../../types";
+import type { Usuario, LoginForm, ForgotPasswordRequest } from "../../types";
 import {
   login as loginAPI,
   logout as logoutAPI,
   me as meAPI,
+  forgotPassword as forgotPasswordAPI,
 } from "../../api/authService";
 
 // ------ INITIAL STATE ------
@@ -23,15 +24,20 @@ export type AuthSliceType = {
   isLoggingIn: boolean;
   isLoggingOut: boolean;
   isValidatingSession: boolean;
+  isForgotPasswordLoading: boolean;
 
   loginResponse: { ok: boolean; message: string };
   logoutResponse: { ok: boolean; message: string };
+  forgotPasswordResponse: { ok: boolean; message: string };
 
   login: (credentials: LoginForm) => Promise<boolean>;
   logout: () => Promise<boolean>;
   validateSession: () => Promise<void>;
+  forgotPassword: (data: ForgotPasswordRequest) => Promise<boolean>;
+  
   clearLoginResponse: () => void;
   clearLogoutResponse: () => void;
+  clearForgotPasswordResponse: () => void;
 
   setUser: (newUserData: Partial<Usuario>) => void;
 };
@@ -44,9 +50,11 @@ export const createAuthSlice: StateCreator<AuthSliceType> = (set, get) => ({
   isLoggingIn: false,
   isLoggingOut: false,
   isValidatingSession: false,
+  isForgotPasswordLoading: false,
 
   loginResponse: initialResponse,
   logoutResponse: initialResponse,
+  forgotPasswordResponse: initialResponse,
 
   login: async (credentials) => {
     set({
@@ -190,8 +198,61 @@ export const createAuthSlice: StateCreator<AuthSliceType> = (set, get) => ({
     }
   },
 
+  forgotPassword: async (data) => {
+    set({
+      isForgotPasswordLoading: true,
+      forgotPasswordResponse: initialResponse,
+    });
+
+    try {
+      const response = await forgotPasswordAPI(data);
+
+      if (!response) {
+        set({
+          forgotPasswordResponse: {
+            ok: false,
+            message: "No se recibió respuesta del servidor",
+          },
+          isForgotPasswordLoading: false,
+        });
+        return false;
+      }
+
+      if (response.ok) {
+        set({
+          forgotPasswordResponse: {
+            ok: true,
+            message: response.message || "Correo enviado correctamente",
+          },
+          isForgotPasswordLoading: false,
+        });
+        return true;
+      }
+
+      set({
+        forgotPasswordResponse: {
+          ok: false,
+          message: response.message || "Error al recuperar contraseña",
+        },
+        isForgotPasswordLoading: false,
+      });
+      return false;
+    } catch (error) {
+      console.error("Error en forgotPassword:", error);
+      set({
+        forgotPasswordResponse: {
+          ok: false,
+          message: "Error de conexión con el servidor",
+        },
+        isForgotPasswordLoading: false,
+      });
+      return false;
+    }
+  },
+
   clearLoginResponse: () => set({ loginResponse: initialResponse }),
   clearLogoutResponse: () => set({ logoutResponse: initialResponse }),
+  clearForgotPasswordResponse: () => set({ forgotPasswordResponse: initialResponse }),
 
   setUser: (newUserData: Partial<Usuario>) => {
     const currentUser = get().user;

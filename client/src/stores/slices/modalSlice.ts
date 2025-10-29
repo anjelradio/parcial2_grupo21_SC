@@ -16,7 +16,10 @@ export type ModalName =
   | "editDia"
   | "deleteDia"
   | "editAsignacion"
-  | "deleteAsignacion";
+  | "deleteAsignacion"
+  | "permisoDetail"
+  | "solicitudDetail"
+  | "forgotPassword";
 
 export type ModalSliceType = {
   modals: Record<ModalName, boolean>;
@@ -46,6 +49,9 @@ export const createModalSlice: StateCreator<ModalSliceType> = (set, get) => ({
     deleteDia: false,
     editAsignacion: false,
     deleteAsignacion: false,
+    permisoDetail: false,
+    solicitudDetail: false,
+    forgotPassword: false
   },
   anyModalOpen: false,
   setModal: (modal, open) => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast, Bounce } from "react-toastify";
@@ -30,10 +30,6 @@ function AddAsignacion() {
     bloquesHorarios,
     aulas,
   } = useAppStore();
-
-  const [grupoSeleccionado, setGrupoSeleccionado] = useState<number | null>(
-    null
-  );
 
   const {
     register,
@@ -82,7 +78,6 @@ function AddAsignacion() {
         transition: Bounce,
       });
       reset();
-      setGrupoSeleccionado(null);
       clearCreateAsignacionResponse();
     } else if (
       !createAsignacionResponse.ok &&
@@ -207,7 +202,6 @@ function AddAsignacion() {
               value={idGrupoSeleccionado?.toString() || ""}
               onValueChange={(value) => {
                 setValue("id_grupo", parseInt(value));
-                setGrupoSeleccionado(parseInt(value));
               }}
               disabled={isCreatingAsignacion}
             >

@@ -22,6 +22,7 @@ import {
   type HorarioSliceType,
 } from "./slices/horarioSlice";
 import  { createAsignacionSlice ,type AsignacionSliceType } from "./slices/asignacionSlice";
+import  { createControlDocenteSlice ,type ControlDocenteSliceType } from "./slices/controlDocenteSlice";
 
 export const useAppStore = create<
   AuthSliceType &
@@ -33,7 +34,8 @@ export const useAppStore = create<
     AulaSliceType &
     GrupoSliceType &
     HorarioSliceType & 
-    AsignacionSliceType
+    AsignacionSliceType &
+    ControlDocenteSliceType
 >()(
   devtools(
     persist(
@@ -47,7 +49,8 @@ export const useAppStore = create<
         ...createAulaSlice(...a),
         ...createGrupoSlice(...a),
         ...createHorarioSlice(...a),
-        ...createAsignacionSlice(...a)
+        ...createAsignacionSlice(...a),
+        ...createControlDocenteSlice(...a)
       }),
       {
         name: "app-store",

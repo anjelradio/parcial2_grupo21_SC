@@ -10,6 +10,7 @@ import Button from "../../components/ui/Button";
 import Error from "../../components/ui/error";
 import { useAppStore } from "../../stores/useAppStore";
 import type { LoginForm } from "../../types";
+import ForgotPassword from "./ForgotPassword";
 
 type LoginFormInputs = {
   identifier: string; // código_docente o email
@@ -18,8 +19,14 @@ type LoginFormInputs = {
 
 function Login() {
   const navigate = useNavigate();
-  const { login, isLoggingIn, loginResponse, clearLoginResponse, user } =
-    useAppStore();
+  const { 
+    login, 
+    isLoggingIn, 
+    loginResponse, 
+    clearLoginResponse, 
+    user,
+    setModal // Agregar setModal para abrir el modal
+  } = useAppStore();
 
   const {
     register,
@@ -43,7 +50,7 @@ function Login() {
     };
 
     const route = routes[rol];
-    console.log(rol)
+    console.log(rol);
     if (route) {
       navigate(route);
     } else {
@@ -56,7 +63,7 @@ function Login() {
   const onSubmit = async (data: LoginFormInputs) => {
     setErrorMessage("");
     clearLoginResponse();
-    console.log(data)
+    console.log(data);
 
     // Construir objeto según tipo de login
     const credentials: LoginForm = isEmail
@@ -69,6 +76,11 @@ function Login() {
       // Navegar según el rol
       navigateByRole(user.rol);
     }
+  };
+
+  // Función para abrir el modal de forgot password
+  const handleForgotPassword = () => {
+    setModal("forgotPassword", true);
   };
 
   // Manejar respuestas del backend
@@ -213,12 +225,13 @@ function Login() {
 
                 {/* ¿Olvidaste tu contraseña? */}
                 <div className="text-right">
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-white text-sm transition-colors"
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    className="text-gray-400 hover:text-white text-sm transition-colors cursor-pointer"
                   >
                     ¿Olvidaste tu contraseña?
-                  </a>
+                  </button>
                 </div>
 
                 {/* Error del servidor */}
@@ -266,9 +279,9 @@ function Login() {
               <h3 className="tracking-widest mb-4 opacity-90">
                 ATENCIÓN Y SOPORTE
               </h3>
-              <p className="text-sm opacity-80">Tel: +52 (55) 1234-5678</p>
+              <p className="text-sm opacity-80">Tel: +591 6444731</p>
               <p className="text-sm opacity-80">
-                Email: soporte@facultad.edu.mx
+                Email: soporte@facultad.edu.bo
               </p>
             </div>
 
@@ -289,6 +302,7 @@ function Login() {
           </div>
         </footer>
       </div>
+      <ForgotPassword/>
     </div>
   );
 }

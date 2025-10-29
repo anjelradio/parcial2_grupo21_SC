@@ -1,4 +1,3 @@
-import GlobalLoader from "../components/layout/GlobalLoader";
 import { MobileDock } from "../components/layout/MobileDock";
 import TopBar from "../components/layout/TopBar";
 import Transition from "../components/layout/Transition";

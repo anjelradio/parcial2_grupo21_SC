@@ -1,4 +1,3 @@
-import { useAppStore } from "../../stores/useAppStore";
 
 export default function GlobalLoader() {
 //   const { isGlobalLoading } = useAppStore();
@@ -23,7 +22,7 @@ export default function GlobalLoader() {
         </span>
 
         {/* Línea decorativa */}
-        <div className="mt-3 w-32 h-0.5 bg-gradient-to-r from-[#2c425a] to-[#226c8f] rounded-full"></div>
+        <div className="mt-3 w-32 h-0.5 from-[#2c425a] to-[#226c8f] rounded-full"></div>
       </div>
     </div>
   );

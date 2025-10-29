@@ -182,3 +182,37 @@ export async function updatePassword(id: number, formData: UpdatePassword) {
     return handleAxiosError(error, "actualizar contraseña");
   }
 }
+
+
+
+/**
+ * FORGOT PASSWORD - Request password reset
+ */
+import { ForgotPasswordResponseSchema } from "../utils/auth-schemas";
+import type { ForgotPasswordRequest } from "../types";
+
+/**
+ * FORGOT PASSWORD - Request password reset
+ */
+export async function forgotPassword(data: ForgotPasswordRequest) {
+  const url = `${BASE_URL}/forgot-password`;
+  
+  try {
+    const { data: responseData } = await axios.post(url, data, {
+      headers: { "Content-Type": "application/json" },
+      validateStatus: () => true,
+    });
+
+    const result = ForgotPasswordResponseSchema.safeParse(responseData);
+    
+    return result.success
+      ? result.data
+      : {
+          ok: false,
+          message: responseData?.message || "Respuesta inválida del servidor",
+          data: null,
+        };
+  } catch (error) {
+    return handleAxiosError(error, "recuperar contraseña");
+  }
+}
