@@ -1,7 +1,16 @@
 import { lazy, Suspense } from "react";
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Loading from "../components/ui/Loading";
 import Layout from "../layouts/Layout";
+import InicioAutoridad from "../pages/Autoridad/Inicio/InicioAutoridad";
+import Reportes from "../pages/Autoridad/Reportes/Reportes";
+import GestionarSuplencias from "../pages/Shared/ControlDocente/views/GestionarSuplencias/GestionarSuplencias";
+import GestionarPermisos from "../pages/Shared/ControlDocente/views/GestionarPermisos/GestionarPermisos";
+import GestionarSolicitudes from "../pages/Shared/ControlDocente/views/GestionarSolicitudes/GestionarSolicitudes";
+import InicioDocente from "../pages/Docente/Inicio/InicioDocente";
+import CameraScanner from "../pages/Docente/Camera/CameraScanner";
+import AsistenciasDocente from "../pages/Docente/Asistencias/AsistenciasDocente";
 
 // Page Login
 const Login = lazy(() => import("../pages/Autenticacion/Login"));
@@ -58,10 +67,74 @@ function AppRouter() {
 
         <Route element={<Layout />}>
           {/* Rutas docente */}
-          <Route path="docente"></Route>
+          <Route path="docente">
+            <Route
+              path="inicio"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <InicioDocente />
+                </Suspense>
+              }
+            />
+
+            <Route
+              path="reg-asistencia"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <CameraScanner  />
+                </Suspense>
+              }
+            />
+
+            <Route
+              path="asistencias"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <AsistenciasDocente  />
+                </Suspense>
+              }
+            />
+
+          </Route>
 
           {/* Rutas autoridad */}
-          <Route path="autoridad"></Route>
+          <Route path="autoridad">
+            <Route
+              path="inicio"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <InicioAutoridad />
+                </Suspense>
+              }
+            />
+
+            <Route
+              path="reportes"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <Reportes />
+                </Suspense>
+              }
+            />
+
+            <Route
+              path="control-docente"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <ControlDocente />
+                </Suspense>
+              }
+            />
+
+            <Route
+              path="gestion-academica"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <GestionAcademica />
+                </Suspense>
+              }
+            />
+          </Route>
 
           {/* Rutas admin */}
           <Route path="admin">
@@ -108,8 +181,8 @@ function AppRouter() {
               }
             />
           </Route>
-          {/* Rutas compartidas */}
 
+          {/* Rutas compartidas */}
           <Route path="gestion-academica">
             <Route
               path="gestionar-materias"
@@ -132,6 +205,35 @@ function AppRouter() {
               element={
                 <Suspense fallback={<Loading />}>
                   <Aulas />
+                </Suspense>
+              }
+            />
+          </Route>
+
+          <Route path="control-docente">
+            <Route
+              path="gestionar-suplencias"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <GestionarSuplencias />
+                </Suspense>
+              }
+            />
+
+            <Route
+              path="gestionar-solicitudes"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <GestionarSolicitudes />
+                </Suspense>
+              }
+            />
+
+            <Route
+              path="gestionar-permisos"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <GestionarPermisos />
                 </Suspense>
               }
             />

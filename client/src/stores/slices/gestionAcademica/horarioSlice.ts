@@ -6,19 +6,19 @@ import type {
   BloqueHorario,
   CreateBloqueHorarioData,
   UpdateBloqueHorarioData,
-} from "../../types";
+} from "../../../types";
 import {
   getAllDias,
   createDia,
   updateDia,
   deleteDia,
-} from "../../api/diaService";
+} from "../../../api/diaService";
 import {
   getAllBloquesHorarios,
   createBloqueHorario,
   updateBloqueHorario,
   deleteBloqueHorario,
-} from "../../api/bloqueHorarioService";
+} from "../../../api/bloqueHorarioService";
 
 const initialResponse = { ok: false, message: "" };
 

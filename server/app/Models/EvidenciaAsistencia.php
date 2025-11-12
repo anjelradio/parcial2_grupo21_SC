@@ -11,13 +11,14 @@ class EvidenciaAsistencia extends Model
 
     protected $table = 'evidencia_asistencia';
     protected $primaryKey = 'id_evidencia';
-
+    public $timestamps = false;
+    
     protected $fillable = [
         'id_asistencia',
         'imagen',
         'confianza',
         'fecha_subida',
-        'observaciones',
+        'motivo', // Cambiado de 'observaciones' a 'motivo'
     ];
 
     protected $casts = [
@@ -44,6 +45,6 @@ class EvidenciaAsistencia extends Model
 
     public function rutaImagen()
     {
-        return asset("storage/evidencias/{$this->imagen}");
+        return $this->imagen; // Ya devuelve la URL completa de Cloudinary
     }
 }

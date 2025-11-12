@@ -44,7 +44,7 @@ class StoreSuplenciaRequest extends FormRequest
         $validator->after(function ($validator) {
             // Validar que el titular de la asignación coincida con cod_titular
             $this->validarTitularAsignacion($validator);
-            
+
             // Validar que el suplente no tenga conflictos de horario
             $this->validarConflictosHorario($validator);
         });
@@ -57,7 +57,7 @@ class StoreSuplenciaRequest extends FormRequest
     {
         if ($this->id_asignacion && $this->cod_titular) {
             $asignacion = Asignacion::find($this->id_asignacion);
-            
+
             if ($asignacion && $asignacion->codigo_docente !== $this->cod_titular) {
                 $validator->errors()->add(
                     'cod_titular',
@@ -107,12 +107,12 @@ class StoreSuplenciaRequest extends FormRequest
                     // Mismo bloque horario
                     if ($horarioSuplir->id_bloque === $horarioSuplente->id_bloque) {
                         $dia = $horarioSuplente->dia->nombre ?? 'Desconocido';
-                        $horario = $horarioSuplente->bloque 
+                        $horario = $horarioSuplente->bloque
                             ? "{$horarioSuplente->bloque->hora_inicio->format('H:i')} - {$horarioSuplente->bloque->hora_fin->format('H:i')}"
                             : 'Desconocido';
-                        
-                        $materiaConflicto = $horarioSuplente->asignacion 
-                            && $horarioSuplente->asignacion->grupo 
+
+                        $materiaConflicto = $horarioSuplente->asignacion
+                            && $horarioSuplente->asignacion->grupo
                             && $horarioSuplente->asignacion->grupo->materia
                             ? $horarioSuplente->asignacion->grupo->materia->sigla
                             : 'Materia desconocida';
@@ -133,21 +133,21 @@ class StoreSuplenciaRequest extends FormRequest
         return [
             'cod_titular.required' => 'El código del docente titular es obligatorio',
             'cod_titular.exists' => 'El docente titular no existe',
-            
+
             'cod_suplente.required' => 'El código del docente suplente es obligatorio',
             'cod_suplente.exists' => 'El docente suplente no existe',
             'cod_suplente.different' => 'El docente suplente debe ser diferente al titular',
-            
+
             'id_asignacion.required' => 'La asignación es obligatoria',
             'id_asignacion.exists' => 'La asignación seleccionada no existe',
             'id_asignacion.unique' => 'Ya existe una suplencia para esta asignación',
-            
+
             'motivo.required' => 'El motivo es obligatorio',
             'motivo.max' => 'El motivo no puede exceder 500 caracteres',
-            
+
             'fecha_inicio.required' => 'La fecha de inicio es obligatoria',
             'fecha_inicio.date' => 'La fecha de inicio debe ser una fecha válida',
-            
+
             'fecha_fin.required' => 'La fecha de fin es obligatoria',
             'fecha_fin.date' => 'La fecha de fin debe ser una fecha válida',
             'fecha_fin.after_or_equal' => 'La fecha de fin debe ser igual o posterior a la fecha de inicio',
@@ -156,11 +156,13 @@ class StoreSuplenciaRequest extends FormRequest
 
     protected function failedValidation(Validator $validator)
     {
+        $errors = $validator->errors()->all(); // devuelve todos los mensajes como array simple
+        $firstError = $errors[0] ?? 'Datos inválidos';
+
         throw new HttpResponseException(
             response()->json([
                 'ok' => false,
-                'message' => 'Errores de validación',
-                'errors' => $validator->errors()
+                'message' => $firstError
             ], 422)
         );
     }

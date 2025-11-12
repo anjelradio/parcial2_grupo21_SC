@@ -4,42 +4,57 @@
 FROM php:8.3-fpm-alpine AS build
 
 # Instalar dependencias necesarias para Laravel y PostgreSQL
-RUN apk add --no-cache git unzip libpq-dev oniguruma-dev icu-dev shadow supervisor nginx bash \
-    && docker-php-ext-install pdo pdo_pgsql intl opcache
+RUN apk add --no-cache git unzip libpq-dev oniguruma-dev icu-dev shadow bash \
+    && docker-php-ext-install pdo pdo_pgsql intl opcache mbstring exif
 
 # Copiar Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copiar todo el proyecto Laravel al contenedor
+# Copiar el código fuente de Laravel
 COPY . .
 
-# Instalar dependencias PHP (sin ejecutar scripts post-install)
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+# Instalar dependencias PHP (sin dev)
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
-# Ejecutar scripts artisan manualmente una vez todo está en su lugar
-RUN php artisan config:clear && php artisan route:clear && php artisan view:clear || true
+# ⚠️ NO CACHEES AQUÍ - Las configs dependen de variables de entorno de Cloud Run
+# RUN php artisan config:cache && php artisan route:cache  ← ELIMINAR ESTO
+
+# Limpiar cualquier cache existente
+RUN php artisan config:clear || true
+RUN php artisan cache:clear || true
+RUN php artisan route:clear || true
+RUN php artisan view:clear || true
+RUN rm -rf bootstrap/cache/*.php
 
 # ================================
 # Etapa 2: Imagen final de ejecución
 # ================================
 FROM php:8.3-fpm-alpine
 
-RUN apk add --no-cache nginx bash supervisor
+# Instalar dependencias de runtime y extensiones requeridas
+RUN apk add --no-cache nginx bash supervisor libpq-dev \
+    && docker-php-ext-install pdo pdo_pgsql opcache
 
-# Copiar PHP y Nginx desde la imagen anterior
-COPY --from=build /usr/local/bin/php /usr/local/bin/php
-COPY --from=build /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
-COPY --from=build /usr/local/etc/php/ /usr/local/etc/php/
-COPY --from=build /usr/local/etc/php-fpm.d/ /usr/local/etc/php-fpm.d/
+WORKDIR /var/www/html
+
+# Copiar el proyecto desde la etapa build
 COPY --from=build /var/www/html /var/www/html
 
 # Copiar configuraciones
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 
-# Puerto Cloud Run
+# Copiar y dar permisos al entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Permisos
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
 EXPOSE 8080
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+# Usar el entrypoint que limpia cachés antes de iniciar supervisord
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

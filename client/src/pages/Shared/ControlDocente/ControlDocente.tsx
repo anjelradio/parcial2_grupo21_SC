@@ -1,37 +1,62 @@
 import { useEffect } from "react";
 import SolicitudList from "./SolicitudAula/SolicitudList";
-import { AlertCircle, Building2, ClipboardCheck } from "lucide-react";
+import {
+  AlertCircle,
+  Building2,
+  ClipboardCheck,
+  UserCheck,
+} from "lucide-react";
 import { useAppStore } from "../../../stores/useAppStore";
 import PermisosList from "./Permisos/PermisosList";
 import PermisoDetail from "./Permisos/PermisoDetail";
 import { ToastContainer } from "react-toastify";
 import SolicitudDetail from "./SolicitudAula/SolicitudDetail";
+import { useNavigate } from "react-router-dom";
 
 function ControlDocente() {
+  const navigate = useNavigate();
   const {
     setGlobalLoading,
-    fetchPermisosDocente,
+    fetchPermisosRecientes,
     fetchSolicitudesAula,
-    hasLoadedPermisos,
+    hasLoadedPermisosRecientes,
     hasLoadedSolicitudes,
-    permisosDocente,
-    solicitudesAula,
+    fetchStatsControlDocente,
+    hasLoadedStatsControlDocente,
+    statsControlDocente,
   } = useAppStore();
   useEffect(() => {
     const cargar = async () => {
-      if (!hasLoadedPermisos || !hasLoadedSolicitudes) setGlobalLoading(true);
-      await Promise.all([fetchPermisosDocente(), fetchSolicitudesAula()]);
+      if (
+        !hasLoadedPermisosRecientes ||
+        !hasLoadedSolicitudes ||
+        !hasLoadedStatsControlDocente
+      )
+        setGlobalLoading(true);
+      await Promise.all([
+        fetchPermisosRecientes(),
+        fetchSolicitudesAula(),
+        fetchStatsControlDocente(),
+      ]);
       setGlobalLoading(false);
     };
     cargar();
   }, [
-    fetchPermisosDocente,
+    fetchPermisosRecientes,
     fetchSolicitudesAula,
-    hasLoadedPermisos,
+    hasLoadedPermisosRecientes,
     hasLoadedSolicitudes,
     setGlobalLoading,
+    fetchStatsControlDocente,
+    hasLoadedStatsControlDocente,
   ]);
 
+  const permisosTotal = statsControlDocente?.permisos.total;
+  const permisosPendientes = statsControlDocente?.permisos.pendientes;
+  const permisosAprobados = statsControlDocente?.permisos.aprobados;
+  const permisosRechazados = statsControlDocente?.permisos.rechazados;
+  const solicitudesAulaTotal = statsControlDocente?.solicitudes_aula.total;
+  const suplenciasActivas = statsControlDocente?.suplencias.activas;
   return (
     <div className="space-y-8">
       <div className="mb-6">
@@ -61,9 +86,7 @@ function ControlDocente() {
               style={{ borderRadius: "8px" }}
             >
               <AlertCircle className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-              <p className="text-3xl text-yellow-600">
-                {permisosDocente.filter((p) => p.estado === "Pendiente").length}
-              </p>
+              <p className="text-3xl text-yellow-600">{permisosPendientes}</p>
               <p className="text-sm text-gray-600 mt-1">Permisos Pendientes</p>
             </div>
 
@@ -72,20 +95,18 @@ function ControlDocente() {
               style={{ borderRadius: "8px" }}
             >
               <Building2 className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-              <p className="text-3xl text-blue-600">
-                {solicitudesAula.filter((s) => s.estado === "Pendiente").length}
-              </p>
+              <p className="text-3xl text-blue-600">{solicitudesAulaTotal}</p>
               <p className="text-sm text-gray-600 mt-1">Solicitudes Aulas</p>
             </div>
 
-            {/* <div cuando este hcha el suplenciaSLice
+            <div
               className="bg-green-50 p-4 text-center"
               style={{ borderRadius: "8px" }}
             >
               <UserCheck className="w-8 h-8 text-green-600 mx-auto mb-2" />
-              <p className="text-3xl text-green-600">{suplencias.length}</p>
+              <p className="text-3xl text-green-600">{suplenciasActivas}</p>
               <p className="text-sm text-gray-600 mt-1">Suplencias Activas</p>
-            </div> */}
+            </div>
           </div>
 
           {/* Mini gráfica de estados */}
@@ -102,12 +123,7 @@ function ControlDocente() {
                   <div
                     className="bg-green-500 h-full"
                     style={{
-                      width: `${
-                        (permisosDocente.filter((p) => p.estado === "Aprobado")
-                          .length /
-                          permisosDocente?.length) *
-                        100
-                      }%`,
+                      width: `${(permisosAprobados! / permisosTotal!) * 100}%`,
                     }}
                   ></div>
                 </div>
@@ -121,12 +137,7 @@ function ControlDocente() {
                   <div
                     className="bg-yellow-500 h-full"
                     style={{
-                      width: `${
-                        (permisosDocente.filter((p) => p.estado === "Pendiente")
-                          .length /
-                          permisosDocente.length) *
-                        100
-                      }%`,
+                      width: `${(permisosPendientes! / permisosTotal!) * 100}%`,
                     }}
                   ></div>
                 </div>
@@ -140,12 +151,7 @@ function ControlDocente() {
                   <div
                     className="bg-red-500 h-full"
                     style={{
-                      width: `${
-                        (permisosDocente.filter((p) => p.estado === "Rechazado")
-                          .length /
-                          permisosDocente.length) *
-                        100
-                      }%`,
+                      width: `${(permisosRechazados! / permisosTotal!) * 100}%`,
                     }}
                   ></div>
                 </div>
@@ -157,8 +163,8 @@ function ControlDocente() {
 
         {/* Botón Suplencias Docentes */}
         <button
-          onClick={() => {}}
-          className="bg-[#226c8f] p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group"
+          onClick={() => navigate("/control-docente/gestionar-suplencias")}
+          className="bg-[#226c8f] p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-pointer"
           style={{ borderRadius: "8px" }}
         >
           <div className="flex flex-col items-center gap-4 h-full justify-center">
@@ -185,9 +191,9 @@ function ControlDocente() {
         {/* Solicitudes de Aulas */}
         <SolicitudList />
       </div>
-      <ToastContainer/>
-      <PermisoDetail/>
-      <SolicitudDetail/>
+      <ToastContainer />
+      <PermisoDetail />
+      <SolicitudDetail />
     </div>
   );
 }

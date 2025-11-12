@@ -11,7 +11,7 @@ class TipoAsistencia extends Model
 
     protected $table = 'tipo_asistencia';
     protected $primaryKey = 'id_tipo';
-
+    public $timestamps = false;
     protected $fillable = [
         'nombre', // ('Presencial', 'Virtual')
     ];

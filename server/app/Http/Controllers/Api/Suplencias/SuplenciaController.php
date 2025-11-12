@@ -7,6 +7,7 @@ use App\Http\Requests\Suplencias\StoreSuplenciaRequest;
 use App\Http\Requests\Suplencias\UpdateSuplenciaRequest;
 use App\Services\Suplencias\SuplenciaService;
 use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
 
 class SuplenciaController extends Controller
 {
@@ -20,15 +21,24 @@ class SuplenciaController extends Controller
     }
 
     /**
-     * Listar todas las suplencias
+     * Listar suplencias con paginación y filtros
+     * (ADMIN y AUTORIDAD)
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $suplencias = $this->suplenciaService->getAll();
-            return $this->success($suplencias, 'Suplencias obtenidas correctamente');
+            $filters = [
+                'page' => $request->query('page', 1),
+                'page_size' => $request->query('page_size', 10),
+                'nombre_titular' => $request->query('nombre_titular'),
+                'id_gestion' => $request->query('id_gestion'),
+            ];
+
+            $data = $this->suplenciaService->getAllPaginated($filters);
+
+            return $this->success($data, 'Suplencias obtenidas correctamente');
         } catch (\Exception $e) {
-            return $this->error('Error al obtener suplencias', 500);
+            return $this->error('Error al obtener las suplencias: ' . $e->getMessage(), 500);
         }
     }
 
@@ -46,7 +56,7 @@ class SuplenciaController extends Controller
     }
 
     /**
-     * Actualizar suplencia
+     * Actualizar suplencia existente
      */
     public function update(UpdateSuplenciaRequest $request, $id)
     {

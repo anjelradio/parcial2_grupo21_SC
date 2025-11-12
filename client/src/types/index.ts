@@ -47,9 +47,34 @@ import {
   ConflictosResponseSchema,
 } from "../utils/asignacion-schemas";
 import type {
+  FiltrosAplicadosSchema,
+  PaginacionSchema,
+  PermisoDocenteMutationResponseSchema,
+  PermisoDocenteSchema,
+  PermisosDocenteListResponseSchema,
+  SolicitudAulaMutationResponseSchema,
+  SolicitudAulaSchema,
+  SolicitudesAulaListResponseSchema,
   UpdatePermisoDocenteSchema,
   UpdateSolicitudAulaSchema,
 } from "../utils/controldocente-schemas";
+import type {
+  AsignacionDocenteSchema,
+  AsignacionesPorDocenteResponseSchema,
+  DocenteSchema,
+  DocentesListResponseSchema,
+  SemestreSchema,
+  SemestresListResponseSchema,
+} from "../utils/utils-schemas";
+import type {
+  ControlDocenteStatsResponseSchema,
+  ControlDocenteStatsSchema,
+  PermisosStatsSchema,
+  SolicitudesAulaStatsSchema,
+  SuplenciasStatsSchema,
+} from "../utils/stats-schema";
+import type { CreateSuplenciaDataSchema, DeleteSuplenciaResponseSchema, FiltrosAplicadosSuplenciasSchema, SuplenciaResponseSchema, SuplenciaSchema, SuplenciasListResponseSchema, UpdateSuplenciaDataSchema } from "../utils/suplencias-schemas";
+import type { AsistenciaDocenteSchema, AsistenciaResponseSchema, EvidenciaAsistenciaSchema, RegistrarAsistenciaPresencialSchema, RegistrarAsistenciaVirtualSchema } from "../utils/asistencia-schemas";
 
 // ------ TIPOS INFERIDOS ------
 export type Usuario = z.infer<typeof UsuarioSchema>;
@@ -250,51 +275,47 @@ export type UpdateSolicitudAulaFormData = z.infer<
 // ============================================
 // PERMISOS DOCENTE
 // ============================================
-
-export type PermisoDocente = {
-  id_permiso: number;
-  codigo_docente: string;
-  nombre_docente: string;
-  documento_evidencia: string | null;
-  fecha_inicio: string;
-  fecha_fin: string;
-  motivo: string;
-  estado: "Pendiente" | "Aprobado" | "Rechazado";
-  fecha_solicitud: string;
-  fecha_revision: string | null;
-  observaciones: string | null;
-};
-
-export type UpdatePermisoDocenteData = {
-  estado: "Pendiente" | "Aprobado" | "Rechazado";
-  observaciones?: string;
-};
+export type PermisoDocente = z.infer<typeof PermisoDocenteSchema>;
+export type Paginacion = z.infer<typeof PaginacionSchema>;
+export type FiltrosAplicados = z.infer<typeof FiltrosAplicadosSchema>;
+export type PermisosDocenteListResponse = z.infer<
+  typeof PermisosDocenteListResponseSchema
+>;
+export type PermisoDocenteMutationResponse = z.infer<
+  typeof PermisoDocenteMutationResponseSchema
+>;
+export type UpdatePermisoDocenteData = z.infer<
+  typeof UpdatePermisoDocenteSchema
+>;
 
 // ============================================
 // SOLICITUDES AULA
 // ============================================
 
-export type SolicitudAula = {
-  id_solicitud: number;
-  id_asignacion: number;
-  nro_aula: string;
-  fecha_solicitada: string;
-  motivo: string;
-  estado: "Pendiente" | "Aprobada" | "Rechazada";
-  fecha_solicitud: string;
-  observaciones: string | null;
-  aula: string | null;
-  asignacion: {
-    id: number;
-    codigo_docente: string;
-    estado: string;
-  } | null;
-};
+export type SolicitudAula = z.infer<typeof SolicitudAulaSchema>;
+export type SolicitudesAulaListResponse = z.infer<
+  typeof SolicitudesAulaListResponseSchema
+>;
+export type SolicitudAulaMutationResponse = z.infer<
+  typeof SolicitudAulaMutationResponseSchema
+>;
+export type UpdateSolicitudAulaData = z.infer<typeof UpdateSolicitudAulaSchema>;
 
-export type UpdateSolicitudAulaData = {
-  estado: "Pendiente" | "Aprobada" | "Rechazada";
-  observaciones?: string;
-};
+
+
+// ============================================
+// SUPLENCIAS DOCENTES
+// ============================================
+
+export type Suplencia = z.infer<typeof SuplenciaSchema>;
+export type SuplenciasListResponse = z.infer<typeof SuplenciasListResponseSchema>;
+export type SuplenciaResponse = z.infer<typeof SuplenciaResponseSchema>;
+export type DeleteSuplenciaResponse = z.infer<typeof DeleteSuplenciaResponseSchema>;
+export type FiltrosAplicadosSuplencias = z.infer<typeof FiltrosAplicadosSuplenciasSchema>;
+export type CreateSuplenciaData = z.infer<typeof CreateSuplenciaDataSchema>;
+export type UpdateSuplenciaData = z.infer<typeof UpdateSuplenciaDataSchema>;
+
+
 
 // ============================================
 // RESPUESTAS API
@@ -313,7 +334,46 @@ export type ApiErrorResponse = {
   errors?: any;
 };
 
-
 // ForgotPss
 export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
-export type ForgotPasswordResponse = z.infer<typeof ForgotPasswordResponseSchema>;
+export type ForgotPasswordResponse = z.infer<
+  typeof ForgotPasswordResponseSchema
+>;
+
+// ============================================
+// UTILIDADES
+// ============================================
+
+// --- Semestre ---
+export type Semestre = z.infer<typeof SemestreSchema>;
+export type SemestresListResponse = z.infer<typeof SemestresListResponseSchema>;
+
+// --- Docentes ---
+export type Docente = z.infer<typeof DocenteSchema>;
+export type DocentesListResponse = z.infer<typeof DocentesListResponseSchema>;
+
+// --- Asignaciones ---
+export type AsignacionDocente = z.infer<typeof AsignacionDocenteSchema>;
+export type AsignacionesPorDocenteResponse = z.infer<typeof AsignacionesPorDocenteResponseSchema>;
+
+
+// ============================================
+//  STATS
+// ============================================
+
+// --- Control docente ---
+export type PermisosStats = z.infer<typeof PermisosStatsSchema>;
+export type SolicitudesAulaStats = z.infer<typeof SolicitudesAulaStatsSchema>;
+export type SuplenciasStats = z.infer<typeof SuplenciasStatsSchema>;
+export type ControlDocenteStats = z.infer<typeof ControlDocenteStatsSchema>;
+export type ControlDocenteStatsResponse = z.infer<
+  typeof ControlDocenteStatsResponseSchema
+>;
+
+
+
+export type AsistenciaDocente = z.infer<typeof AsistenciaDocenteSchema>;
+export type EvidenciaAsistencia = z.infer<typeof EvidenciaAsistenciaSchema>;
+export type AsistenciaResponse = z.infer<typeof AsistenciaResponseSchema>;
+export type RegistrarAsistenciaPresencial = z.infer<typeof RegistrarAsistenciaPresencialSchema>;
+export type RegistrarAsistenciaVirtual = z.infer<typeof RegistrarAsistenciaVirtualSchema>;

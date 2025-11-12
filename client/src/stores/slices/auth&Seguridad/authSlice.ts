@@ -1,11 +1,11 @@
 import type { StateCreator } from "zustand";
-import type { Usuario, LoginForm, ForgotPasswordRequest } from "../../types";
+import type { Usuario, LoginForm, ForgotPasswordRequest } from "../../../types";
 import {
   login as loginAPI,
   logout as logoutAPI,
   me as meAPI,
   forgotPassword as forgotPasswordAPI,
-} from "../../api/authService";
+} from "../../../api/authService";
 
 // ------ INITIAL STATE ------
 const initialUser: Usuario | null = null;

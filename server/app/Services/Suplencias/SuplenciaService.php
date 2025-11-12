@@ -3,6 +3,7 @@
 namespace App\Services\Suplencias;
 
 use App\Models\Suplencia;
+use App\Models\GestionAcademica;
 use App\Services\Bitacora\BitacoraService;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -17,21 +18,91 @@ class SuplenciaService
     }
 
     /**
-     * Obtener todas las suplencias con sus relaciones
+     * Obtener suplencias con paginación y filtros
      */
-    public function getAll()
+    public function getAllPaginated(array $filters = [])
     {
-        return Suplencia::with([
+        $page = $filters['page'] ?? 1;
+        $pageSize = $filters['page_size'] ?? 50;
+
+        // Calcular gestión actual si no se envía
+        $idGestion = $filters['id_gestion'] ?? $this->getCurrentGestionId();
+
+        $query = Suplencia::with([
             'titular.user:id,nombre,apellido_paterno,apellido_materno',
             'suplente.user:id,nombre,apellido_paterno,apellido_materno',
             'asignacion.grupo.materia:id_materia,sigla,nombre',
-            'asignacion.gestion:id_gestion,anio,semestre'
+            'asignacion.gestion:id_gestion,anio,semestre,fecha_inicio,fecha_fin'
         ])
-        ->orderBy('id_suplencia', 'desc')
-        ->get()
-        ->map(function ($suplencia) {
-            return $this->formatSuplenciaData($suplencia);
-        });
+            ->when($idGestion, function ($q) use ($idGestion) {
+                // Filtrar por suplencias dentro del rango de la gestión actual
+                $gestion = GestionAcademica::find($idGestion);
+                if ($gestion) {
+                    $q->whereBetween('fecha_inicio', [
+                        $gestion->fecha_inicio,
+                        $gestion->fecha_fin
+                    ]);
+                }
+            })
+            ->orderByDesc('fecha_registro');
+
+        // Aplicar filtros dinámicos
+        $this->applyFilters($query, $filters);
+
+        // Paginación manual
+        $total = $query->count();
+        $totalPaginas = ceil($total / $pageSize);
+
+        $suplencias = $query->skip(($page - 1) * $pageSize)
+            ->take($pageSize)
+            ->get()
+            ->map(fn($s) => $this->formatSuplenciaData($s));
+
+        return [
+            'suplencias' => $suplencias,
+            'paginacion' => [
+                'total_registros' => $total,
+                'total_paginas' => $totalPaginas,
+                'pagina_actual' => (int) $page,
+                'registros_por_pagina' => (int) $pageSize,
+                'tiene_siguiente' => $page < $totalPaginas,
+                'tiene_anterior' => $page > 1,
+            ],
+            'filtros_aplicados' => [
+                'nombre_titular' => $filters['nombre_titular'] ?? null,
+                'id_gestion' => $idGestion,
+            ],
+        ];
+    }
+
+    
+
+    /**
+     * Aplicar filtros a la consulta
+     */
+    private function applyFilters($query, array $filters)
+    {
+        // Filtro por nombre de docente titular
+        if (!empty($filters['nombre_titular'])) {
+            $nombre = $filters['nombre_titular'];
+            $query->whereHas('titular.user', function ($q) use ($nombre) {
+                $q->where(DB::raw("CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno)"), 'LIKE', "%{$nombre}%");
+            });
+        }
+    }
+
+    /**
+     * Obtener la gestión académica actual
+     */
+    private function getCurrentGestionId(): ?int
+    {
+        $hoy = Carbon::today();
+
+        $gestion = GestionAcademica::where('fecha_inicio', '<=', $hoy)
+            ->where('fecha_fin', '>=', $hoy)
+            ->first();
+
+        return $gestion?->id_gestion;
     }
 
     /**
@@ -149,38 +220,38 @@ class SuplenciaService
         return [
             'id_suplencia' => $suplencia->id_suplencia,
             'id_asignacion' => $suplencia->id_asignacion,
-            
+
             // Docente Titular
             'cod_titular' => $suplencia->cod_titular,
             'nombre_docente_titular' => $titular && $titular->user
                 ? trim("{$titular->user->nombre} {$titular->user->apellido_paterno} {$titular->user->apellido_materno}")
                 : 'Desconocido',
-            
+
             // Docente Suplente
             'cod_suplente' => $suplencia->cod_suplente,
             'nombre_docente_suplente' => $suplente && $suplente->user
                 ? trim("{$suplente->user->nombre} {$suplente->user->apellido_paterno} {$suplente->user->apellido_materno}")
                 : 'Desconocido',
-            
+
             // Materia y Grupo
             'materia' => $asignacion && $asignacion->grupo && $asignacion->grupo->materia ? [
                 'id_materia' => $asignacion->grupo->materia->id_materia,
                 'sigla' => $asignacion->grupo->materia->sigla,
                 'nombre' => $asignacion->grupo->materia->nombre,
             ] : null,
-            
+
             'grupo' => $asignacion && $asignacion->grupo ? [
                 'id_grupo' => $asignacion->grupo->id_grupo,
                 'nombre' => $asignacion->grupo->nombre,
             ] : null,
-            
+
             'gestion' => $asignacion && $asignacion->gestion ? [
                 'id_gestion' => $asignacion->gestion->id_gestion,
                 'anio' => $asignacion->gestion->anio,
                 'semestre' => $asignacion->gestion->semestre,
                 'nombre_gestion' => "{$asignacion->gestion->anio}-{$asignacion->gestion->semestre}",
             ] : null,
-            
+
             // Datos de la suplencia
             'motivo' => $suplencia->motivo,
             'fecha_inicio' => $suplencia->fecha_inicio?->format('Y-m-d'),

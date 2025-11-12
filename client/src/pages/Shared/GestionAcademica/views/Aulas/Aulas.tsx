@@ -5,6 +5,7 @@ import {
   AlertCircle,
   XCircle,
 } from "lucide-react";
+import { ScrollArea } from "../../../../../components/ui/scroll-area";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../../../../../stores/useAppStore";
 import AddAulaForm from "./AddAulaForm";
@@ -121,26 +122,72 @@ function Aulas() {
           a.nro_aula.startsWith(piso.toString())
         );
         if (aulasDelPiso.length === 0) return null;
+        const pisoColors = {
+          1: "bg-blue-500/10 border-blue-500",
+          2: "bg-indigo-500/10 border-indigo-500",
+          3: "bg-purple-500/10 border-purple-500",
+          4: "bg-[#226c8f]/10 border-[#226c8f]",
+        };
 
+        const pisoTextColors = {
+          1: "text-blue-600",
+          2: "text-indigo-600",
+          3: "text-purple-600",
+          4: "text-[#226c8f]",
+        };
         return (
-          <div key={piso}>
-            <div className="flex items-center gap-2 mb-4">
+            <div
+              key={piso}
+              className="bg-white shadow-lg border border-gray-100 "
+              style={{ borderRadius: "12px" }}
+            >
+              {/* Encabezado del Piso */}
               <div
-                className="w-1 h-6 bg-[#226c8f]"
-                style={{ borderRadius: "2px" }}
-              ></div>
-              <h3 className="text-gray-900">
-                {" "}
-                {piso === 0 ? "Auditorio" : `Piso ${piso}`}
-              </h3>
-            </div>
+                className={`${
+                  pisoColors[piso as keyof typeof pisoColors]
+                } border-l-4 p-5`}
+                style={{
+                  borderTopLeftRadius: "12px",
+                  borderTopRightRadius: "12px",
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="p-2.5 bg-white/80"
+                    style={{ borderRadius: "8px" }}
+                  >
+                    <Building2
+                      className={`w-6 h-6 ${
+                        pisoTextColors[piso as keyof typeof pisoTextColors]
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <h3
+                      className={`${
+                        pisoTextColors[piso as keyof typeof pisoTextColors]
+                      }`}
+                    >
+                      Piso {piso}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-0.5">
+                      {aulasDelPiso.length}{" "}
+                      {aulasDelPiso.length === 1 ? "aula" : "aulas"} en este
+                      piso
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {aulasDelPiso.map((aula) => (
-                <AulaCard key={aula.nro_aula} aula={aula} />
-              ))}
+              {/* Lista Scrolleable de Aulas */}
+              <ScrollArea className="h-[400px] p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {aulasDelPiso.map((aula) => (
+                    <AulaCard key={aula.nro_aula} aula={aula} />
+                  ))}
+                </div>
+              </ScrollArea>
             </div>
-          </div>
         );
       })}
       <ToastContainer />

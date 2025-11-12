@@ -87,4 +87,10 @@ class Asignacion extends Model
         $materia = $this->grupo?->materia?->sigla ?? '';
         return "{$materia} - Grupo {$grupo} ({$docente})";
     }
+    public function GrupoMateria()
+    {
+        $grupo = $this->grupo?->nombre ?? 'N/A';
+        $materia = $this->grupo?->materia?->nombre ?? '';
+        return "{$grupo} - {$materia}";
+    }
 }

@@ -14,7 +14,7 @@ export default defineConfig({
       manifest: {
         name: "Sistema de Gestión Docente FICCT",
         short_name: "FICCT",
-        theme_color: "#0b3d91",
+        theme_color: "#2c415a",
         background_color: "#ffffff",
         display: "standalone",
         start_url: "/",

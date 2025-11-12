@@ -98,7 +98,7 @@ function GestionAcademica() {
     setModal("diasList", true);
   };
   return (
-    <div className="space-y-8">
+    <div className="space-y-0 md:space-y-8">
       <div className="mb-6">
         <h1 className="text-gray-900 mb-2">Gestión Académica</h1>
         <p className="text-gray-600">
@@ -107,23 +107,25 @@ function GestionAcademica() {
       </div>
 
       {/* Grid de secciones */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
         {/* Botón Materias */}
         <button
           onClick={() => navigate("/gestion-academica/gestionar-materias")}
-          className="bg-[#226c8f] p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group"
+          className="bg-[#226c8f] p-4 md:p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group"
           style={{ borderRadius: "8px" }}
         >
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-2 md:gap-4">
             <div
-              className="p-4 bg-white/20 group-hover:bg-white/30 transition-all"
+              className="p-2 md:p-4 bg-white/20 group-hover:bg-white/30 transition-all"
               style={{ borderRadius: "8px" }}
             >
-              <BookOpen className="w-12 h-12 text-white" />
+              <BookOpen className="w-8 h-8 md:w-12 md:h-12 text-white" />
             </div>
             <div className="text-center">
-              <h3 className="text-white text-xl mb-2">Materias</h3>
-              <p className="text-white/80 text-sm">
+              <h3 className="text-white text-base md:text-xl mb-1 md:mb-2">
+                Materias
+              </h3>
+              <p className="text-white/80 text-xs md:text-sm">
                 {totalMaterias} materias registradas
               </p>
             </div>
@@ -133,19 +135,21 @@ function GestionAcademica() {
         {/* Botón Grupos */}
         <button
           onClick={() => navigate("/gestion-academica/gestionar-grupos")}
-          className="bg-[#226c8f] p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group"
+          className="bg-[#226c8f] p-4 md:p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group"
           style={{ borderRadius: "8px" }}
         >
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-2 md:gap-4">
             <div
-              className="p-4 bg-white/20 group-hover:bg-white/30 transition-all"
+              className="p-2 md:p-4 bg-white/20 group-hover:bg-white/30 transition-all"
               style={{ borderRadius: "8px" }}
             >
-              <Users className="w-12 h-12 text-white" />
+              <Users className="w-8 h-8 md:w-12 md:h-12 text-white" />
             </div>
             <div className="text-center">
-              <h3 className="text-white text-xl mb-2">Grupos</h3>
-              <p className="text-white/80 text-sm">
+              <h3 className="text-white text-base md:text-xl mb-1 md:mb-2">
+                Grupos
+              </h3>
+              <p className="text-white/80 text-xs md:text-sm">
                 {totalGrupos} grupos activos
               </p>
             </div>
@@ -155,19 +159,21 @@ function GestionAcademica() {
         {/* Botón Aulas */}
         <button
           onClick={() => navigate("/gestion-academica/gestionar-aulas")}
-          className="bg-[#226c8f] p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group"
+          className="bg-[#226c8f] p-4 md:p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group col-span-2 md:col-span-1"
           style={{ borderRadius: "8px" }}
         >
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-2 md:gap-4">
             <div
-              className="p-4 bg-white/20 group-hover:bg-white/30 transition-all"
+              className="p-2 md:p-4 bg-white/20 group-hover:bg-white/30 transition-all"
               style={{ borderRadius: "8px" }}
             >
-              <Building2 className="w-12 h-12 text-white" />
+              <Building2 className="w-8 h-8 md:w-12 md:h-12 text-white" />
             </div>
             <div className="text-center">
-              <h3 className="text-white text-xl mb-2">Aulas</h3>
-              <p className="text-white/80 text-sm">
+              <h3 className="text-white text-base md:text-xl mb-1 md:mb-2">
+                Aulas
+              </h3>
+              <p className="text-white/80 text-xs md:text-sm">
                 {totalAulas} aulas disponibles
               </p>
             </div>
@@ -176,7 +182,7 @@ function GestionAcademica() {
       </div>
 
       {/* Bloques y Días Académicos */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 md:mt-0">
         {/* Bloques Horarios */}
         <div
           className="bg-white p-6 shadow-lg border border-gray-100"
@@ -358,11 +364,11 @@ function GestionAcademica() {
       </div>
       <ToastContainer />
       <HorarioList />
-      <EditHorario/>
-      <DeleteHorario/>
-      <DiaList/>
-      <EditDia/>
-      <DeleteDia/>
+      <EditHorario />
+      <DeleteHorario />
+      <DiaList />
+      <EditDia />
+      <DeleteDia />
     </div>
   );
 }

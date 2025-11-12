@@ -58,13 +58,43 @@ const PERMISOS_BASE_URL = `${API_BASE_URL}/permisos-docente`;
 /**
  * Obtener todos los permisos de docentes
  */
-export async function getAllPermisosDocente() {
+// ============================================
+// PERMISOS DOCENTE
+// ============================================
+
+/**
+ * Obtener permisos de docentes con paginación y filtros
+ */
+export async function getAllPermisosDocente(params?: {
+  page?: number;
+  page_size?: number;
+  nombre_docente?: string;
+  fecha?: string;
+  id_gestion?: number | string;
+}) {
   try {
-    const { data } = await axios.get(PERMISOS_BASE_URL, {
+    // Crear query string dinámico
+    const query = new URLSearchParams();
+
+    if (params?.page) query.append("page", String(params.page));
+    if (params?.page_size) query.append("page_size", String(params.page_size));
+    if (params?.nombre_docente)
+      query.append("nombre_docente", params.nombre_docente);
+    if (params?.fecha) query.append("fecha", params.fecha);
+    if (params?.id_gestion)
+      query.append("id_gestion", String(params.id_gestion));
+
+    const url =
+      query.toString().length > 0
+        ? `${PERMISOS_BASE_URL}?${query.toString()}`
+        : PERMISOS_BASE_URL;
+
+    const { data } = await axios.get(url, {
       headers: getAuthHeaders(),
       validateStatus: () => true,
     });
 
+    // Validar estructura con Zod
     const result = PermisosDocenteListResponseSchema.safeParse(data);
 
     return result.success
@@ -78,6 +108,7 @@ export async function getAllPermisosDocente() {
     return handleAxiosError(error, "obtener permisos de docentes");
   }
 }
+
 
 /**
  * Actualizar estado y observaciones de un permiso
@@ -118,15 +149,38 @@ export async function updatePermisoDocente(
 const SOLICITUDES_BASE_URL = `${API_BASE_URL}/solicitudes-aula`;
 
 /**
- * Obtener todas las solicitudes de aula
+ * Obtener solicitudes de aula con paginación y filtros
  */
-export async function getAllSolicitudesAula() {
+export async function getAllSolicitudesAula(params?: {
+  page?: number;
+  page_size?: number;
+  nombre_docente?: string;
+  fecha?: string;
+  id_gestion?: number | string;
+}) {
   try {
-    const { data } = await axios.get(SOLICITUDES_BASE_URL, {
+    // Construir query string dinámico
+    const query = new URLSearchParams();
+
+    if (params?.page) query.append("page", String(params.page));
+    if (params?.page_size) query.append("page_size", String(params.page_size));
+    if (params?.nombre_docente)
+      query.append("nombre_docente", params.nombre_docente);
+    if (params?.fecha) query.append("fecha", params.fecha);
+    if (params?.id_gestion)
+      query.append("id_gestion", String(params.id_gestion));
+
+    const url =
+      query.toString().length > 0
+        ? `${SOLICITUDES_BASE_URL}?${query.toString()}`
+        : SOLICITUDES_BASE_URL;
+
+    const { data } = await axios.get(url, {
       headers: getAuthHeaders(),
       validateStatus: () => true,
     });
 
+    // Validar estructura con Zod (paginada)
     const result = SolicitudesAulaListResponseSchema.safeParse(data);
 
     return result.success

@@ -1,11 +1,11 @@
 import type { StateCreator } from "zustand";
-import type { Usuario, CreateUserData, UpdateUserData } from "../../types";
+import type { Usuario, CreateUserData, UpdateUserData } from "../../../types";
 import {
   getAllUsers,
   createUser,
   updateUser,
   deleteUser,
-} from "../../api/usersService";
+} from "../../../api/usersService";
 
 const initialResponse = { ok: false, message: "" };
 

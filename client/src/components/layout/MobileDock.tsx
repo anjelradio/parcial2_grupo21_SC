@@ -2,13 +2,12 @@ import { createPortal } from "react-dom";
 import {
   Home,
   CheckSquare,
-  Calendar,
-  BarChart3,
   FileText,
   Users,
   Building2,
   BookOpen,
   ShieldCheck,
+  Camera
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import type { Usuario } from "../../types";
@@ -40,23 +39,34 @@ export function MobileDock({ user }: MobileDockProps) {
       case "DOCENTE":
         return [
           { id: "inicio", label: "INICIO", icon: Home },
-          { id: "asistencias", label: "ASISTENCIAS", icon: CheckSquare },
-          { id: "horarios", label: "HORARIOS", icon: Calendar },
-          { id: "estadisticas", label: "ESTADÍSTICAS", icon: BarChart3 },
+          { id: "reg-asistencia", label: "ASISTENCIA", icon: Camera},
+          { id: "asistencias", label: "GESTION", icon: CheckSquare },
         ];
       case "AUTORIDAD":
         return [
           { id: "inicio", label: "INICIO", icon: Home },
           { id: "reportes", label: "REPORTES", icon: FileText },
           { id: "control-docente", label: "CONTROL DOCENTE", icon: Users },
-          { id: "aulas-materias", label: "AULAS Y MATERIAS", icon: Building2 },
+          {
+            id: "gestion-academica",
+            label: "GESTIÓN ACADÉMICA",
+            icon: Building2,
+          },
         ];
       case "ADMIN":
         return [
           { id: "inicio", label: "INICIO", icon: Home },
-          { id: "gestion-academica", label: "GESTIÓN ACADÉMICA", icon: Building2 },
+          {
+            id: "gestion-academica",
+            label: "GESTIÓN ACADÉMICA",
+            icon: Building2,
+          },
           { id: "asignaciones", label: "ASIGNACIONES", icon: BookOpen },
-          { id: "control-docente", label: "CONTROL DOCENTE", icon: ShieldCheck },
+          {
+            id: "control-docente",
+            label: "CONTROL DOCENTE",
+            icon: ShieldCheck,
+          },
           { id: "usuarios", label: "USUARIOS", icon: Users },
         ];
       default:
@@ -65,17 +75,13 @@ export function MobileDock({ user }: MobileDockProps) {
   };
 
   const tabs = getTabsByRole();
-  const gridCols = user.rol === "ADMIN" ? "grid-cols-5" : "grid-cols-4";
 
   // Contenido del dock flotante
   const dockContent = (
-    <div className="lg:hidden fixed bottom-6 left-4 right-4 z-50">
+    <div className="lg:hidden fixed w-full bottom-0 left-0 right-0 z-50">
       {/* Dock container con sombra y fondo glassmorphism */}
-      <div
-        className="backdrop-blur-md bg-[#2c415a]/95 shadow-2xl border border-[#226c8f]/30"
-        style={{ borderRadius: "16px" }}
-      >
-        <div className={`grid ${gridCols} gap-2 p-3`}>
+      <div className="backdrop-blur-md bg-[#2c415a]/95 shadow-2xl border border-[#226c8f]/30">
+        <div className={`flex justify-evenly gap-1 p-2`}>
           {tabs.map((tab) => {
             const Icon = tab.icon;
 
@@ -87,7 +93,7 @@ export function MobileDock({ user }: MobileDockProps) {
                   `
                   relative
                   flex flex-col items-center justify-center gap-2
-                  py-3 px-2
+                  py-0.5 px-4
                   transition-all duration-300 ease-out
                   cursor-pointer
                   ${
@@ -147,12 +153,12 @@ export function MobileDock({ user }: MobileDockProps) {
                     {/* Label */}
                     <span
                       className={`
-                        text-[10px] 
+                        text-[9px] 
                         text-center 
                         leading-tight 
                         tracking-wide
                         transition-all duration-300
-                        ${user.rol === "ADMIN" ? "text-[9px]" : ""}
+                        ${user.rol === "ADMIN" ? "text-[5px]" : ""}
                         ${isActive ? "font-medium" : "font-normal"}
                       `}
                     >

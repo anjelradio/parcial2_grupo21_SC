@@ -1,11 +1,11 @@
 import type { StateCreator } from "zustand";
-import type { Grupo, CreateGrupoData, UpdateGrupoData } from "../../types";
+import type { Grupo, CreateGrupoData, UpdateGrupoData } from "../../../types";
 import {
   getAllGrupos,
   createGrupo,
   updateGrupo,
   deleteGrupo,
-} from "../../api/grupoService";
+} from "../../../api/grupoService";
 
 const initialResponse = { ok: false, message: "" };
 

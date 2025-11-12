@@ -152,7 +152,7 @@ function SolicitudDetail() {
                 Código Docente
               </Label>
               <Input
-                value={selectedSolicitud.asignacion?.codigo_docente || "N/A"}
+                value={selectedSolicitud.codigo_docente || "N/A"}
                 readOnly
                 className="bg-gray-50"
                 style={{ borderRadius: "8px" }}
@@ -164,7 +164,7 @@ function SolicitudDetail() {
                 Estado Asignación
               </Label>
               <Input
-                value={selectedSolicitud.asignacion?.estado || "N/A"}
+                value={selectedSolicitud?.estado || "N/A"}
                 readOnly
                 className="bg-gray-50"
                 style={{ borderRadius: "8px" }}

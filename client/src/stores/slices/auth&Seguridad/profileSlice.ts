@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
-import type { UpdatePersonalInfo, UpdatePassword } from "../../types";
-import { updatePassword, updatePersonalInfo } from "../../api/authService";
+import type { UpdatePersonalInfo, UpdatePassword } from "../../../types";
+import { updatePassword, updatePersonalInfo } from "../../../api/authService";
 import type { AuthSliceType } from "./authSlice";
 
 const initialResponse = { ok: false, message: "" };

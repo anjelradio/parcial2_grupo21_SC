@@ -4,13 +4,13 @@ import type {
   CreateAsignacionData,
   UpdateAsignacionData,
   ConflictoAgrupado,
-} from "../../types";
+} from "../../../types";
 import {
   getAllAsignaciones,
   createAsignacion,
   updateAsignacion,
   deleteAsignacion,
-} from "../../api/asignacionService";
+} from "../../../api/asignacionService";
 
 const initialResponse = { ok: false, message: "" };
 

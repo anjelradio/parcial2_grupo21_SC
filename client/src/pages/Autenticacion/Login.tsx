@@ -45,8 +45,8 @@ function Login() {
   const navigateByRole = (rol: string) => {
     const routes: Record<string, string> = {
       ADMIN: "/admin/inicio",
-      DOCENTE: "/docente",
-      AUTORIDAD: "/autoridad",
+      DOCENTE: "/docente/inicio",
+      AUTORIDAD: "/autoridad/inicio",
     };
 
     const route = routes[rol];
@@ -145,15 +145,16 @@ function Login() {
                 Facultad de Ingeniería
               </p>
               <h1
-                className="text-white text-xl md:text-5xl tracking-[0.05em] md:tracking-[0.08em] leading-tight"
-                style={{ fontFamily: "Georgia, serif", fontWeight: 600 }}
+                className="text-white text-2xl md:text-5xl tracking-[0.05em] md:tracking-[0.08em] leading-7 md:leading-11 "
+                style={{ fontFamily: "Rufina, serif",  fontWeight: "700", fontStyle:"normal" }}
               >
                 <span className="whitespace-nowrap">
                   Ciencias de la Computación
                 </span>
                 <br className="hidden md:block" />
                 <span className="md:hidden"> </span>
-                <span className="block md:inline">y Telecomunicaciones</span>
+                <span className="block">& </span>
+                <span className="block md:inline">Telecomunicaciones</span>
               </h1>
             </div>
 

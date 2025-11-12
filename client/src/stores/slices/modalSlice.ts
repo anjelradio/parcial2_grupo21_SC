@@ -19,7 +19,11 @@ export type ModalName =
   | "deleteAsignacion"
   | "permisoDetail"
   | "solicitudDetail"
-  | "forgotPassword";
+  | "forgotPassword"
+  | "editSuplencia"
+  | "deleteSuplencia"
+  | "asistenciaVirtualModal"
+  | "cameraScanner";
 
 export type ModalSliceType = {
   modals: Record<ModalName, boolean>;
@@ -51,7 +55,11 @@ export const createModalSlice: StateCreator<ModalSliceType> = (set, get) => ({
     deleteAsignacion: false,
     permisoDetail: false,
     solicitudDetail: false,
-    forgotPassword: false
+    forgotPassword: false,
+    editSuplencia: false,
+    deleteSuplencia: false,
+    asistenciaVirtualModal: false,
+    cameraScanner: false
   },
   anyModalOpen: false,
   setModal: (modal, open) => {

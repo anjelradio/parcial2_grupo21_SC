@@ -12,7 +12,7 @@ class AsistenciaDocente extends Model
 
     protected $table = 'asistencia_docente';
     protected $primaryKey = 'id_asistencia';
-
+    public $timestamps = false;
     protected $fillable = [
         'id_asignacion',
         'id_tipo_asistencia',

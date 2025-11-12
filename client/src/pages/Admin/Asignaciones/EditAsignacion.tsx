@@ -508,7 +508,7 @@ function EditAsignacion() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setEditMode(true)}
+                    onClick={(e) => {e.preventDefault();setEditMode(true)}}
                     className="px-4 py-2 bg-[#226c8f] text-white hover:bg-[#1a5470] transition-colors flex items-center gap-2"
                     style={{ borderRadius: "8px" }}
                   >

@@ -11,6 +11,7 @@ class UbicacionFacultad extends Model
 
     protected $table = 'ubicacion_facultad';
     protected $primaryKey = 'id_ubicacion';
+    public $timestamps = false;
 
     protected $fillable = [
         'nombre',
@@ -48,6 +49,4 @@ class UbicacionFacultad extends Model
     {
         return $query->where('nombre', 'ILIKE', "%{$nombre}%");
     }
-
-    
 }

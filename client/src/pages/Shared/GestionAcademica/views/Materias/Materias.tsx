@@ -8,11 +8,12 @@ import { useAppStore } from "../../../../../stores/useAppStore";
 import { ToastContainer } from "react-toastify";
 import EditMateria from "./Modals/EditMateria";
 import DeleteMateria from "./Modals/DeleteMateria";
+import { ScrollArea } from "../../../../../components/ui/scroll-area";
 
 function Materias() {
   const { materias } = useAppStore();
-  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const [searchMaterias, setSearchMaterias] = useState("");
   return (
     <div className="space-y-8">
       <div className="mb-6 flex items-center gap-4">
@@ -94,38 +95,58 @@ function Materias() {
       {/* Formulario de Nueva Materia */}
       <AddMateriaForm />
 
-      {/* Barra de Búsqueda */}
+      {/* Lista de Materias */}
+
       <div
-        className="bg-white p-4 shadow-lg border border-gray-100"
-        style={{ borderRadius: "8px" }}
+        className="bg-white shadow-lg border border-gray-100"
+        style={{ borderRadius: "12px" }}
       >
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <Input
-            placeholder="Buscar materias por nombre o sigla..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-            style={{ borderRadius: "8px" }}
-          />
+        {/* Encabezado del Contenedor */}
+        <div className="border-b border-gray-200 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div
+              className="p-2.5 bg-[#226c8f]/10"
+              style={{ borderRadius: "8px" }}
+            >
+              <BookOpen className="w-6 h-6 text-[#226c8f]" />
+            </div>
+            <h3 className="text-gray-900">Materias Registradas</h3>
+          </div>
+
+          {/* Buscador */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Input
+              placeholder="Buscar materia por nombre o sigla..."
+              value={searchMaterias}
+              onChange={(e) => setSearchMaterias(e.target.value)}
+              className="pl-10"
+              style={{ borderRadius: "8px" }}
+            />
+          </div>
         </div>
+
+        {/* Lista Scrolleable de Materias */}
+        <ScrollArea className="h-[600px] p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {materias
+              .filter(
+                (m) =>
+                  m.nombre
+                    .toLowerCase()
+                    .includes(searchMaterias.toLowerCase()) ||
+                  m.sigla.toLowerCase().includes(searchMaterias.toLowerCase())
+              )
+              .map((materia) => (
+                <MateriaCard key={materia.id_materia} materia={materia} />
+              ))}
+          </div>
+        </ScrollArea>
       </div>
 
-      {/* Lista de Materias */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {materias
-          .filter(
-            (m) =>
-              m.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              m.sigla.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-          .map((materia) => (
-            <MateriaCard key={materia.id_materia} materia={materia} />
-          ))}
-      </div>
-      <ToastContainer/>
-      <EditMateria/>
-      <DeleteMateria/>
+      <ToastContainer />
+      <EditMateria />
+      <DeleteMateria />
     </div>
   );
 }

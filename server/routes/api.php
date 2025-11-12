@@ -14,11 +14,14 @@ use App\Http\Controllers\Api\Suplencias\SuplenciaController;
 use App\Http\Controllers\Api\SolicitudesAula\SolicitudAulaController;
 use App\Http\Controllers\Api\Auth\UserProfileController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
+use App\Http\Controllers\Api\Estadisticas\EstadisticasController;
+use App\Http\Controllers\Api\AsistenciaDocente\AsistenciaDocenteController;
 
 
 
 use App\Http\Controllers\Api\Bitacora\BitacoraController;
-
+use App\Http\Controllers\Api\Utilidades\UtilidadesController;
+use App\Http\Controllers\QrController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,15 +34,16 @@ use App\Http\Controllers\Api\Bitacora\BitacoraController;
 // ==========================================
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/forgot-password',[PasswordResetController::class, 'reset']);
-    Route::put('/update-personal-info/{id}',[UserProfileController::class, 'updatePersonalInfo']);
-    Route::put('/update-password/{id}',[UserProfileController::class, 'updatePassword']);
+    Route::post('/forgot-password', [PasswordResetController::class, 'reset']);
+    Route::put('/update-personal-info/{id}', [UserProfileController::class, 'updatePersonalInfo']);
+    Route::put('/update-password/{id}', [UserProfileController::class, 'updatePassword']);
 });
 
 // ==========================================
 // RUTAS PROTEGIDAS (requieren autenticación)
 // ==========================================
 Route::middleware('auth:sanctum')->group(function () {
+
 
     // Auth
     Route::prefix('auth')->group(function () {
@@ -132,4 +136,30 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/usuario/{userId}', [BitacoraController::class, 'porUsuario']);
         Route::get('/buscar', [BitacoraController::class, 'buscar']);
     });
+
+    // STATS
+    Route::prefix('estadisticas')->group(function () {
+        Route::get('/globales', [EstadisticasController::class, 'index']);
+        Route::get('/control-docente', [EstadisticasController::class, 'controlDocente']);
+    });
+
+    // UTILIDADES
+    Route::prefix('utilidades')->group(function () {
+        Route::get('/semestres', [UtilidadesController::class, 'getSemestres']);
+        Route::get('/docentes', [UtilidadesController::class, 'getDocentes']);
+        Route::get('/asignaciones/{codigo_docente}', [UtilidadesController::class, 'getAsignacionesPorDocente']);
+    });
+
+    Route::prefix('docentes/{user_id}/asistencias')->group(function () {
+        // Registrar asistencia presencial (QR + GPS)
+        Route::post('/presencial', [AsistenciaDocenteController::class, 'registrarPresencial'])
+            ->name('asistencias.presencial');
+
+        // Registrar asistencia virtual (IA + screenshot)
+        Route::post('/virtual', [AsistenciaDocenteController::class, 'registrarVirtual'])
+            ->name('asistencias.virtual');
+    });
+
+
+    Route::post('/qr/generar', [QrController::class, 'generar']);
 });

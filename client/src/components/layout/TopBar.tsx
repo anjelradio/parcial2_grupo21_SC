@@ -19,7 +19,6 @@ interface TopBarProps {
 }
 
 export default function TopBar({ user }: TopBarProps) {
-
   // Determinar basePath según el rol
   const getBasePath = () => {
     switch (user.rol) {
@@ -51,7 +50,11 @@ export default function TopBar({ user }: TopBarProps) {
           { id: "inicio", label: "INICIO", icon: Home },
           { id: "reportes", label: "REPORTES", icon: FileText },
           { id: "control-docente", label: "CONTROL DOCENTE", icon: Users },
-          { id: "aulas-materias", label: "AULAS Y MATERIAS", icon: Building2 },
+          {
+            id: "gestion-academica",
+            label: "GESTIÓN ACADÉMICA",
+            icon: Building2,
+          },
         ];
       case "ADMIN":
         return [
@@ -67,7 +70,7 @@ export default function TopBar({ user }: TopBarProps) {
             label: "CONTROL DOCENTE",
             icon: ShieldCheck,
           },
-          { id: "usuarios", label: "USUARIOS", icon: Users },
+          { id: "usuarios", label: "USUARIOS Y SISTEMA", icon: Users },
         ];
       default:
         return [];

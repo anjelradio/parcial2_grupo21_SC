@@ -1,11 +1,11 @@
 import type { StateCreator } from "zustand";
-import type { Aula, CreateAulaData, UpdateAulaData } from "../../types";
+import type { Aula, CreateAulaData, UpdateAulaData } from "../../../types";
 import {
   getAllAulas,
   createAula,
   updateAula,
   deleteAula,
-} from "../../api/aulaService";
+} from "../../../api/aulaService";
 
 const initialResponse = { ok: false, message: "" };
 

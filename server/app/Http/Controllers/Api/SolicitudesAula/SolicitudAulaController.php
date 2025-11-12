@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SolicitudesAula\UpdateSolicitudAulaRequest;
 use App\Services\SolicitudesAula\SolicitudAulaService;
 use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
 
 class SolicitudAulaController extends Controller
 {
@@ -22,11 +23,20 @@ class SolicitudAulaController extends Controller
      * Listar todas las solicitudes de aula
      * (ADMIN y AUTORIDAD)
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $solicitudes = $this->solicitudAulaService->getAll();
-            return $this->success($solicitudes, 'Solicitudes de aula obtenidas correctamente');
+            $filters = [
+                'page' => $request->query('page', 1),
+                'page_size' => $request->query('page_size', 9),
+                'nombre_docente' => $request->query('nombre_docente'),
+                'fecha' => $request->query('fecha'),
+                'id_gestion' => $request->query('id_gestion'),
+            ];
+
+            $data = $this->solicitudAulaService->getAllPaginated($filters);
+
+            return $this->success($data, 'Solicitudes de aula obtenidas correctamente');
         } catch (\Exception $e) {
             return $this->error('Error al obtener las solicitudes: ' . $e->getMessage(), 500);
         }

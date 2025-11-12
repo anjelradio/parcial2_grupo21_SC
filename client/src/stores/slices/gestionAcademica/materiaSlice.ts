@@ -1,11 +1,11 @@
 import type { StateCreator } from "zustand";
-import type { Materia, CreateMateriaData, UpdateMateriaData } from "../../types";
+import type { Materia, CreateMateriaData, UpdateMateriaData } from "../../../types";
 import {
   getAllMaterias,
   createMateria,
   updateMateria,
   deleteMateria,
-} from "../../api/materiaService";
+} from "../../../api/materiaService";
 
 const initialResponse = { ok: false, message: "" };
 
