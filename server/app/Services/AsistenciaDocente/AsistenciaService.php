@@ -144,8 +144,8 @@ class AsistenciaService
             if (!$bloque) continue;
 
             // Convertir horas a Carbon para cálculos
-            $horaInicio = Carbon::createFromFormat('H:i:s', $bloque->hora_inicio);
-            $horaActualCarbon = Carbon::createFromFormat('H:i:s', $horaActual);
+            $horaInicio = Carbon::parse(trim($bloque->hora_inicio));
+            $horaActualCarbon = Carbon::parse($horaActual);
 
             // Calcular ventanas de tiempo
             $ventanaInicio = $horaInicio->copy()->subMinutes(self::MINUTOS_ANTES);
