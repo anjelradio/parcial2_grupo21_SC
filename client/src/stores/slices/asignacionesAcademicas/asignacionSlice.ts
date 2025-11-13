@@ -4,6 +4,8 @@ import type {
   CreateAsignacionData,
   UpdateAsignacionData,
   ConflictoAgrupado,
+  Paginacion,
+  FiltrosAplicadosAsignaciones,
 } from "../../../types";
 import {
   getAllAsignaciones,
@@ -20,6 +22,8 @@ export type AsignacionSliceType = {
   hasLoadedAsignaciones: boolean;
   isLoadingAsignaciones: boolean;
   asignacionesResponse: { ok: boolean; message: string };
+  asignacionesPaginacion: Paginacion;
+  asignacionesFiltros: FiltrosAplicadosAsignaciones;
 
   createAsignacion: (data: CreateAsignacionData) => Promise<boolean>;
   isCreatingAsignacion: boolean;
@@ -27,7 +31,10 @@ export type AsignacionSliceType = {
   createAsignacionConflictos: ConflictoAgrupado[] | null;
   clearCreateAsignacionResponse: () => void;
 
-  updateAsignacion: (id: number, data: UpdateAsignacionData) => Promise<boolean>;
+  updateAsignacion: (
+    id: number,
+    data: UpdateAsignacionData
+  ) => Promise<boolean>;
   isUpdatingAsignacion: boolean;
   updateAsignacionResponse: { ok: boolean; message: string };
   updateAsignacionConflictos: ConflictoAgrupado[] | null;
@@ -38,7 +45,14 @@ export type AsignacionSliceType = {
   deleteAsignacionResponse: { ok: boolean; message: string };
   clearDeleteAsignacionResponse: () => void;
 
-  fetchAsignaciones: (force?: boolean) => Promise<void>;
+  fetchAsignaciones: (params?: {
+    page?: number;
+    page_size?: number;
+    nombre_docente?: string;
+    id_gestion?: number;
+    semestre?: number;
+    force?: boolean;
+  }) => Promise<void>;
   selectAsignacion: (id: number) => void;
   clearSelectedAsignacion: () => void;
   clearAsignaciones: () => void;
@@ -49,6 +63,19 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
   get
 ) => ({
   asignaciones: [],
+  asignacionesPaginacion: {
+    total_registros: 0,
+    total_paginas: 0,
+    pagina_actual: 1,
+    registros_por_pagina: 20,
+    tiene_siguiente: false,
+    tiene_anterior: false,
+  },
+  asignacionesFiltros: {
+    id_gestion: null,
+    nombre_docente: null,
+    semestre: null,
+  },
   selectedAsignacion: null,
   hasLoadedAsignaciones: false,
   isLoadingAsignaciones: false,
@@ -65,18 +92,32 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
   isDeletingAsignacion: false,
   deleteAsignacionResponse: initialResponse,
 
-  fetchAsignaciones: async (force = false) => {
+  fetchAsignaciones: async (params = { page: 1, page_size: 9 }) => {
     const { hasLoadedAsignaciones } = get();
-    if (hasLoadedAsignaciones && !force) {
-      console.log("Asignaciones ya cargadas, saltando fetch");
+
+    // Prevent re-fetch ONLY when we are on the first page without filters
+    const force = params.force ?? false;
+
+    const isFirstPageWithoutFilters =
+      params.page === 1 &&
+      !params.nombre_docente &&
+      !params.id_gestion &&
+      !params.semestre;
+
+    if (hasLoadedAsignaciones && !force && isFirstPageWithoutFilters) {
+      console.log(
+        "Asignaciones ya cargadas en página 1 sin filtros, saltando fetch"
+      );
       return;
     }
 
-    console.log("Iniciando fetchAsignaciones...");
+    console.log("Iniciando fetchAsignaciones con params:", params);
     set({ isLoadingAsignaciones: true });
 
+    const { force: _force, ...queryParams } = params;
+
     try {
-      const response = await getAllAsignaciones();
+      const response = await getAllAsignaciones(queryParams);
       console.log("Respuesta de getAllAsignaciones:", response);
 
       if (!response) {
@@ -92,9 +133,19 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
       }
 
       if (response.ok && response.data) {
-        console.log("Asignaciones cargadas exitosamente:", response.data.length);
+        const { asignaciones, paginacion, filtros_aplicados } = response.data;
+
+        console.log(
+          "Asignaciones cargadas exitosamente:",
+          asignaciones.length,
+          "paginación:",
+          paginacion
+        );
+
         set({
-          asignaciones: response.data,
+          asignaciones,
+          asignacionesPaginacion: paginacion,
+          asignacionesFiltros: filtros_aplicados,
           hasLoadedAsignaciones: true,
           asignacionesResponse: { ok: true, message: response.message },
           isLoadingAsignaciones: false,
@@ -162,7 +213,7 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
       // Caso: Éxito
       if (response.ok && response.data) {
         const newAsignacion = response.data as Asignacion;
-        
+
         set((state) => ({
           asignaciones: [...state.asignaciones, newAsignacion],
           createAsignacionResponse: {
@@ -239,7 +290,7 @@ export const createAsignacionSlice: StateCreator<AsignacionSliceType> = (
       // Caso: Éxito
       if (response.ok && response.data) {
         const updatedAsignacion = response.data as Asignacion;
-        
+
         set((state) => ({
           asignaciones: state.asignaciones.map((asignacion) =>
             asignacion.id_asignacion === id ? updatedAsignacion : asignacion

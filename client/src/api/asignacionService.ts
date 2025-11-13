@@ -4,9 +4,18 @@ import {
   AsignacionMutationResponseSchema,
   ConflictosResponseSchema,
 } from "../utils/asignacion-schemas";
-import type { CreateAsignacionData, UpdateAsignacionData } from "../types";
+
+import type {
+  AsignacionesListResponse,
+  CreateAsignacionData,
+  UpdateAsignacionData,
+} from "../types";
+
 import { API_BASE_URL } from "../config/api";
 
+// ============================================
+// AUTH HEADERS
+// ============================================
 function getAuthHeaders() {
   const data = localStorage.getItem("app-store");
   if (!data) return {};
@@ -21,32 +30,63 @@ function getAuthHeaders() {
   }
 }
 
-function handleAxiosError(error: unknown, action: string) {
+// ============================================
+// ERROR HANDLER GENÉRICO
+// ============================================
+function handleAxiosError<T>(
+  error: unknown,
+  action: string,
+  defaultData: T
+): { ok: false; message: string; data: T } {
   console.error(`Error al ${action}:`, error);
 
   if (axios.isAxiosError(error)) {
     return {
-      ok: false as const,
+      ok: false,
       message:
         error.response?.data?.message ||
         `Error de conexión con el servidor al ${action}`,
-      data: null,
+      data: defaultData,
     };
   }
 
   return {
-    ok: false as const,
+    ok: false,
     message: `Error inesperado al ${action}`,
-    data: null,
+    data: defaultData,
   };
 }
 
+// ============================================
+// BASE URL
+// ============================================
 const BASE_URL = `${API_BASE_URL}/asignaciones`;
 
-// GET ALL
-export async function getAllAsignaciones() {
+// ============================================
+// GET LIST + PAGINACIÓN + FILTROS
+// ============================================
+export async function getAllAsignaciones(params?: {
+  page?: number;
+  page_size?: number;
+  nombre_docente?: string;
+  id_gestion?: number;
+  semestre?: number;
+}): Promise<AsignacionesListResponse> {
   try {
-    const { data } = await axios.get(BASE_URL, {
+    const query = new URLSearchParams();
+
+    if (params?.page) query.append("page", String(params.page));
+    if (params?.page_size) query.append("page_size", String(params.page_size));
+    if (params?.nombre_docente)
+      query.append("nombre_docente", params.nombre_docente);
+    if (params?.id_gestion)
+      query.append("id_gestion", String(params.id_gestion));
+    if (params?.semestre) query.append("semestre", String(params.semestre));
+
+    const qs = query.toString();
+    const url = qs ? `${BASE_URL}?${qs}` : BASE_URL;
+
+    const { data } = await axios.get(url, {
       headers: getAuthHeaders(),
       validateStatus: () => true,
     });
@@ -61,11 +101,17 @@ export async function getAllAsignaciones() {
           data: null,
         };
   } catch (error) {
-    return handleAxiosError(error, "obtener asignaciones");
+    return handleAxiosError<AsignacionesListResponse["data"]>(
+      error,
+      "obtener asignaciones",
+      null
+    );
   }
 }
 
+// ============================================
 // CREATE
+// ============================================
 export async function createAsignacion(formData: CreateAsignacionData) {
   const url = `${BASE_URL}/create`;
 
@@ -78,7 +124,7 @@ export async function createAsignacion(formData: CreateAsignacionData) {
       validateStatus: () => true,
     });
 
-    // Intentar parsear como respuesta de conflictos primero
+    // Conflictos
     if (data.ok === false && data.data?.conflictos) {
       const conflictosResult = ConflictosResponseSchema.safeParse(data);
       if (conflictosResult.success) {
@@ -86,7 +132,6 @@ export async function createAsignacion(formData: CreateAsignacionData) {
       }
     }
 
-    // Si no es conflicto, parsear como respuesta normal
     const result = AsignacionMutationResponseSchema.safeParse(data);
 
     return result.success
@@ -97,11 +142,13 @@ export async function createAsignacion(formData: CreateAsignacionData) {
           data: null,
         };
   } catch (error) {
-    return handleAxiosError(error, "crear asignación");
+    return handleAxiosError(error, "crear asignación", null);
   }
 }
 
+// ============================================
 // UPDATE
+// ============================================
 export async function updateAsignacion(
   id: number,
   formData: UpdateAsignacionData
@@ -117,15 +164,11 @@ export async function updateAsignacion(
       validateStatus: () => true,
     });
 
-    // Intentar parsear como respuesta de conflictos primero
     if (data.ok === false && data.data?.conflictos) {
       const conflictosResult = ConflictosResponseSchema.safeParse(data);
-      if (conflictosResult.success) {
-        return conflictosResult.data;
-      }
+      if (conflictosResult.success) return conflictosResult.data;
     }
 
-    // Si no es conflicto, parsear como respuesta normal
     const result = AsignacionMutationResponseSchema.safeParse(data);
 
     return result.success
@@ -136,11 +179,13 @@ export async function updateAsignacion(
           data: null,
         };
   } catch (error) {
-    return handleAxiosError(error, "actualizar asignación");
+    return handleAxiosError(error, "actualizar asignación", null);
   }
 }
 
+// ============================================
 // DELETE
+// ============================================
 export async function deleteAsignacion(id: number) {
   const url = `${BASE_URL}/delete/${id}`;
 
@@ -160,6 +205,6 @@ export async function deleteAsignacion(id: number) {
           data: null,
         };
   } catch (error) {
-    return handleAxiosError(error, "eliminar asignación");
+    return handleAxiosError(error, "eliminar asignación", null);
   }
 }

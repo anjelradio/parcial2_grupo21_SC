@@ -63,7 +63,7 @@ export async function getControlDocenteStats() {
 
     // Validar estructura con Zod
     const result = ControlDocenteStatsResponseSchema.safeParse(data);
-
+    console.log(result)
     return result.success
       ? result.data
       : {

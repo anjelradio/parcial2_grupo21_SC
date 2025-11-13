@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { BookOpen, Search } from "lucide-react";
+import { BookOpen, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Input } from "../../../components/ui/input";
 import { ScrollArea } from "../../../components/ui/scroll-area";
-
 import {
   Select,
   SelectItem,
@@ -10,16 +9,19 @@ import {
   SelectTrigger,
   SelectContent,
 } from "../../../components/ui/select";
+
 import AddAsignacion from "./AddAsignacion";
 import AsignacionCard from "./AsignacionCard";
-import { ToastContainer } from "react-toastify";
 import EditAsignacion from "./EditAsignacion";
 import DeleteAsignacion from "./DeleteAsignacion";
+
 import { useAppStore } from "../../../stores/useAppStore";
+import { ToastContainer } from "react-toastify";
 
 function Asignaciones() {
   const {
     asignaciones,
+    asignacionesPaginacion,
     fetchAsignaciones,
     fetchUsers,
     fetchMaterias,
@@ -27,6 +29,7 @@ function Asignaciones() {
     fetchDias,
     fetchBloquesHorarios,
     fetchAulas,
+    fetchGestiones,
     hasLoadedAsignaciones,
     hasLoadedAulas,
     hasLoadedUsers,
@@ -34,25 +37,19 @@ function Asignaciones() {
     hasLoadedBloquesHorarios,
     hasLoadedMaterias,
     hasLoadedDias,
+    hasLoadedGestiones,
+    gestiones,
     setGlobalLoading,
   } = useAppStore();
 
+  // === ESTADOS ===
   const [searchDocente, setSearchDocente] = useState("");
-  const [selectedSemestre, setSelectedSemestre] = useState("2025-2"); // Cambiado a 2025-2
+  const [semestreFilter, setSemestreFilter] = useState("actual");
+  const [currentPage, setCurrentPage] = useState(1);
 
+  // === CARGA INICIAL ===
   useEffect(() => {
     const cargar = async () => {
-      console.log("=== INICIANDO CARGA DE DATOS ===");
-      console.log("Estado de carga:", {
-        hasLoadedAulas,
-        hasLoadedGrupos,
-        hasLoadedMaterias,
-        hasLoadedBloquesHorarios,
-        hasLoadedDias,
-        hasLoadedUsers,
-        hasLoadedAsignaciones,
-      });
-
       if (
         !hasLoadedAulas ||
         !hasLoadedGrupos ||
@@ -60,171 +57,179 @@ function Asignaciones() {
         !hasLoadedBloquesHorarios ||
         !hasLoadedDias ||
         !hasLoadedUsers ||
-        !hasLoadedAsignaciones
-      )
+        !hasLoadedAsignaciones ||
+        !hasLoadedGestiones
+      ) {
         setGlobalLoading(true);
+      }
 
       await Promise.all([
         fetchAulas(),
         fetchGrupos(),
         fetchMaterias(),
         fetchBloquesHorarios(),
-        fetchAsignaciones(),
         fetchDias(),
         fetchUsers(),
+        fetchGestiones(),
+        fetchAsignaciones(),
       ]);
 
-      console.log("=== CARGA COMPLETADA ===");
       setGlobalLoading(false);
     };
     cargar();
-  }, [
-    fetchAulas,
-    fetchGrupos,
-    fetchMaterias,
-    fetchBloquesHorarios,
-    fetchDias,
-    fetchUsers,
-    fetchAsignaciones,
-    setGlobalLoading,
-    hasLoadedAulas,
-    hasLoadedGrupos,
-    hasLoadedMaterias,
-    hasLoadedDias,
-    hasLoadedUsers,
-    hasLoadedAsignaciones,
-    hasLoadedBloquesHorarios,
-  ]);
+  }, []);
 
-  // Debug: Mostrar asignaciones cargadas
-  useEffect(() => {
-    console.log("Asignaciones actuales:", asignaciones);
-    console.log("Total de asignaciones:", asignaciones.length);
-  }, [asignaciones]);
+  // === BÚSQUEDA POR ENTER ===
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleApplyFilters(1);
+  };
 
-  // Filtrar asignaciones con validación mejorada
-  const asignacionesFiltradas = asignaciones.filter((a) => {
-    // Debug de cada asignación (solo la primera vez)
-    if (asignaciones.length > 0 && asignaciones.indexOf(a) === 0) {
-      console.log("Ejemplo de estructura de asignación:", a);
-      console.log("Gestión nombre_gestion:", a.gestion?.nombre_gestion);
+  // === APLICAR FILTROS ===
+  const handleApplyFilters = async (page = 1) => {
+    const params: any = {
+      page,
+      page_size: 6,
+      nombre_docente: searchDocente.trim() || undefined,
+    };
+
+    // Si NO es "todos" ni "actual", es una gestión seleccionada
+    if (semestreFilter !== "todos" && semestreFilter !== "actual") {
+      params.id_gestion = Number(semestreFilter);
     }
 
-    // Filtro por semestre - construir el nombre igual que el backend
-    const gestionNombre =
-      a.gestion?.nombre_gestion ||
-      (a.gestion ? `${a.gestion.anio}-${a.gestion.semestre}` : "");
-    const cumpleSemestre = gestionNombre === selectedSemestre;
+    await fetchAsignaciones(params);
+    setCurrentPage(page);
+  };
 
-    // Filtro por docente
-    const nombreDocente = a.docente?.nombre_completo?.toLowerCase() || "";
-    const cumpleDocente = nombreDocente.includes(searchDocente.toLowerCase());
+  // === TOTAL DE PÁGINAS DEL BACKEND ===
+  const totalPages = asignacionesPaginacion?.total_paginas || 1;
 
-    return cumpleSemestre && cumpleDocente;
-  });
+  // === RANGO DINÁMICO DE PÁGINAS ===
+  const visiblePages = 3;
+  const half = Math.floor(visiblePages / 2);
 
-  console.log("Asignaciones filtradas:", asignacionesFiltradas.length);
-  console.log("Filtros aplicados:", { selectedSemestre, searchDocente });
+  let startPage = Math.max(1, currentPage - half);
+  let endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+  if (endPage - startPage < visiblePages - 1) {
+    startPage = Math.max(1, endPage - visiblePages + 1);
+  }
+
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
 
   return (
     <div className="space-y-8">
+      {/* ENCABEZADO */}
       <div className="mb-6">
         <h1 className="text-gray-900 mb-2">Gestión de Asignaciones</h1>
-        <p className="text-gray-600">
-          Asigna docentes, materias, grupos y aulas
-        </p>
+        <p className="text-gray-600">Asigna docentes, materias, grupos y aulas</p>
       </div>
 
-      {/* Formulario de nueva asignación */}
+      {/* FORM NUEVA ASIGNACIÓN */}
       <AddAsignacion />
 
-      {/* Lista de asignaciones */}
-      <div
-        className="bg-white p-6 shadow-lg border border-gray-100"
-        style={{ borderRadius: "8px" }}
-      >
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-2">
-            <div
-              className="w-1 h-6 bg-[#226c8f]"
-              style={{ borderRadius: "2px" }}
-            ></div>
-            <h3 className="text-gray-900">Asignaciones Registradas</h3>
+      {/* CONTENEDOR PRINCIPAL */}
+      <div className="bg-white p-6 shadow-lg border border-gray-100 rounded-lg">
+        {/* === FILTROS === */}
+        <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
+          {/* BUSCAR DOCENTE */}
+          <div className="relative flex-1 md:min-w-[280px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Buscar por docente..."
+              value={searchDocente}
+              onChange={(e) => setSearchDocente(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              className="pl-10 rounded-md"
+            />
           </div>
 
-          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full md:w-auto">
-            {/* Barra de búsqueda */}
-            <div className="relative flex-1 md:min-w-[280px]">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder="Buscar por docente..."
-                value={searchDocente}
-                onChange={(e) => setSearchDocente(e.target.value)}
-                className="pl-10"
-                style={{ borderRadius: "8px" }}
-              />
-            </div>
+          {/* SELECT GESTIÓN */}
+          <Select value={semestreFilter} onValueChange={setSemestreFilter}>
+            <SelectTrigger className="w-full md:w-[200px] rounded-md">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="actual">Gestión actual</SelectItem>
+              <SelectItem value="todos">Todas</SelectItem>
+              {gestiones.map((g) => (
+                <SelectItem key={g.id_gestion} value={String(g.id_gestion)}>
+                  {g.descripcion}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-            {/* Filtro de semestre */}
-            <Select
-              value={selectedSemestre}
-              onValueChange={setSelectedSemestre}
-            >
-              <SelectTrigger
-                className="w-full md:w-[180px]"
-                style={{ borderRadius: "8px" }}
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2025-1">Semestre 2025-1</SelectItem>
-                <SelectItem value="2024-2">Semestre 2024-2</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {/* APLICAR */}
+          <button
+            onClick={() => handleApplyFilters(1)}
+            className="px-4 py-2 bg-[#226c8f] text-white rounded-md hover:bg-[#1a5469]"
+          >
+            Aplicar
+          </button>
         </div>
 
-        {/* Contador de asignaciones para debug */}
-        {asignaciones.length > 0 && (
-          <p className="text-sm text-gray-500 mb-3">
-            Total: {asignaciones.length} asignaciones | Mostrando:{" "}
-            {asignacionesFiltradas.length}
-          </p>
-        )}
-
+        {/* === LISTA DE ASIGNACIONES === */}
         <ScrollArea className="h-[500px]">
           <div className="space-y-3 pr-4">
-            {asignacionesFiltradas.map((asignacion) => (
-              <AsignacionCard
-                key={asignacion.id_asignacion}
-                asignacion={asignacion}
-              />
-            ))}
-
-            {asignacionesFiltradas.length === 0 && asignaciones.length > 0 && (
+            {asignaciones.length === 0 ? (
               <div className="text-center py-12">
                 <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">
-                  No se encontraron asignaciones para los filtros aplicados
-                </p>
-                <p className="text-gray-400 text-sm mt-2">
-                  Semestre: {selectedSemestre}
-                  {searchDocente && ` | Docente: ${searchDocente}`}
-                </p>
+                <p className="text-gray-500">No hay asignaciones</p>
               </div>
-            )}
-
-            {asignaciones.length === 0 && (
-              <div className="text-center py-12">
-                <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No hay asignaciones registradas</p>
-                <p className="text-gray-400 text-sm mt-2">
-                  Crea tu primera asignación usando el formulario de arriba
-                </p>
-              </div>
+            ) : (
+              asignaciones.map((asignacion) => (
+                <AsignacionCard
+                  key={asignacion.id_asignacion}
+                  asignacion={asignacion}
+                />
+              ))
             )}
           </div>
         </ScrollArea>
+
+        {/* === PAGINACIÓN === */}
+        <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t">
+          {/* PREV */}
+          <button
+            onClick={() => handleApplyFilters(Math.max(1, currentPage - 1))}
+            disabled={!asignacionesPaginacion?.tiene_anterior}
+            className="p-2 text-gray-600 hover:bg-gray-100 disabled:opacity-40 rounded-md"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          {/* PÁGINAS DINÁMICAS */}
+          {pageNumbers.map((page) => (
+            <button
+              key={page}
+              onClick={() => handleApplyFilters(page)}
+              className={`px-3 py-1.5 min-w-[36px] rounded-md transition-colors ${
+                currentPage === page
+                  ? "bg-[#226c8f] text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          {/* NEXT */}
+          <button
+            onClick={() =>
+              handleApplyFilters(
+                Math.min(totalPages, currentPage + 1)
+              )
+            }
+            disabled={!asignacionesPaginacion?.tiene_siguiente}
+            className="p-2 text-gray-600 hover:bg-gray-100 disabled:opacity-40 rounded-md"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       <ToastContainer />

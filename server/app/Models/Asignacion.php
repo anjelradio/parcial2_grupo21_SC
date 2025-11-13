@@ -61,12 +61,12 @@ class Asignacion extends Model
 
     public function scopeVigentes($query)
     {
-        return $query->where('estado', 'Vigente');
+        return $query->where('estado', 'VIGENTE');
     }
 
     public function scopeFinalizadas($query)
     {
-        return $query->where('estado', 'Finalizada');
+        return $query->where('estado', 'FINALIZADA');
     }
 
     public function scopeCanceladas($query)
@@ -76,9 +76,19 @@ class Asignacion extends Model
 
     // HELPERS
 
-    public function esVigente() { return $this->estado === 'Vigente'; }
-    public function esFinalizada() { return $this->estado === 'Finalizada'; }
-    public function esCancelada() { return $this->estado === 'Cancelada'; }
+    public function esVigente()
+    {
+        return $this->estado === 'VIGENTE';
+    }
+    public function esFinalizada()
+    {
+        return $this->estado === 'FINALIZADA';
+    }
+    public function esCancelada()
+    {
+        return $this->estado === 'CANCELADA';
+    }
+
 
     public function descripcion()
     {

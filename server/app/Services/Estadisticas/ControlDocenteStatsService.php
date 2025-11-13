@@ -58,7 +58,7 @@ class ControlDocenteStatsService
             'ok' => true,
             'message' => 'Estadísticas de Control Docente obtenidas correctamente.',
             'data' => [
-                'gestion_actual' => $gestionActual->nombre_gestion,
+                'gestion_actual' => $gestionActual->descripcion(),
                 'permisos' => $permisos,
                 'solicitudes_aula' => $solicitudes,
                 'suplencias' => $suplencias,

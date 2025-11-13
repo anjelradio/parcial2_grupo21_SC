@@ -11,7 +11,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts";
-import { BookOpen, Users, Building2, CheckCircle } from "lucide-react";
+import { BookOpen, Users, Building2, CheckCircle, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../../../stores/useAppStore";
 import { ToastContainer } from "react-toastify";
@@ -21,8 +21,13 @@ import DeleteHorario from "./Modals/Horarios/DeleteHorario";
 import DiaList from "./Modals/Dias/DiaList";
 import DeleteDia from "./Modals/Dias/DeleteDia";
 import EditDia from "./Modals/Dias/EditDia";
+import AddSemestreForm from "./AddSemestreForm";
+import { ScrollArea } from "../../../components/ui/scroll-area";
+
+
 
 function GestionAcademica() {
+
   const navigate = useNavigate();
   const {
     fetchAulas,
@@ -42,6 +47,10 @@ function GestionAcademica() {
     bloquesHorarios,
     dias,
     setModal,
+    fetchGestiones,
+    gestiones,
+    hasLoadedGestiones,
+    selectGestion
   } = useAppStore();
 
   useEffect(() => {
@@ -51,7 +60,8 @@ function GestionAcademica() {
         !hasLoadedGrupos ||
         !hasLoadedMaterias ||
         !hasLoadedBloquesHorarios ||
-        !hasLoadedDias
+        !hasLoadedDias ||
+        !hasLoadedGestiones
       )
         setGlobalLoading(true);
       await Promise.all([
@@ -60,6 +70,7 @@ function GestionAcademica() {
         fetchMaterias(),
         fetchBloquesHorarios(),
         fetchDias(),
+        fetchGestiones(),
       ]);
       setGlobalLoading(false);
     };
@@ -70,11 +81,13 @@ function GestionAcademica() {
     fetchMaterias,
     fetchBloquesHorarios,
     fetchDias,
+    fetchGestiones,
     setGlobalLoading,
     hasLoadedAulas,
     hasLoadedGrupos,
     hasLoadedMaterias,
     hasLoadedDias,
+    hasLoadedGestiones,
   ]);
 
   const totalMaterias = materias ? materias.length : 0;
@@ -97,6 +110,11 @@ function GestionAcademica() {
   const onAdministrarDias = () => {
     setModal("diasList", true);
   };
+
+  const handleClick = (idGestion: number) => {
+    selectGestion(idGestion)
+    navigate("/gestion-academica/consulta-gestion")
+  }
   return (
     <div className="space-y-0 md:space-y-8">
       <div className="mb-6">
@@ -362,6 +380,111 @@ function GestionAcademica() {
           </div>
         </div>
       </div>
+
+      {/* Gestión Semestral - Layout 2 columnas */}
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+        {/* Columna izquierda 30%: Formulario Crear Semestre */}
+        <div className="lg:col-span-3 mt-6 md:mt-0">
+          <AddSemestreForm />
+        </div>
+
+        {/* Columna derecha 70%: Listado de Semestres */}
+        <div className="lg:col-span-7">
+          <div
+            className="bg-white p-6 shadow-lg border border-gray-100"
+            style={{ borderRadius: "8px" }}
+          >
+            <div className="flex items-center gap-2 mb-6">
+              <div
+                className="w-1 h-6 bg-[#226c8f]"
+                style={{ borderRadius: "2px" }}
+              ></div>
+              <h3 className="text-gray-900">Semestres Registrados</h3>
+            </div>
+
+            <ScrollArea className="h-[400px]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-4">
+                {gestiones.map((gestion) => (
+                  <div
+                    key={gestion.id_gestion}
+                    className="bg-gradient-to-br from-blue-50 to-cyan-50 p-4 border-2 border-transparent hover:border-blue-400 transition-all duration-300 cursor-pointer group shadow-sm hover:shadow-md relative"
+                    style={{ borderRadius: "8px" }}
+                    onClick={() => handleClick(gestion.id_gestion)}
+                  >
+                    {gestion.vigente && (
+                      <div className="absolute top-3 right-3">
+                        <span
+                          className="px-2 py-1 bg-green-600 text-white text-xs"
+                          style={{ borderRadius: "4px" }}
+                        >
+                          Activo
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="absolute right-2 bottom-2 opacity-[0.05] group-hover:opacity-[0.08] transition-opacity pointer-events-none">
+                      <Calendar className="w-20 h-20 text-blue-600" />
+                    </div>
+
+                    <div className="relative z-10 space-y-3">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div
+                          className="p-2 bg-blue-500/20 group-hover:bg-blue-500/30 transition-colors"
+                          style={{ borderRadius: "6px" }}
+                        >
+                          <Calendar className="w-5 h-5 text-blue-700" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600">Semestre</p>
+                          <p className="text-gray-900">
+                            {gestion.descripcion}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div
+                          className="bg-white/50 p-2"
+                          style={{ borderRadius: "6px" }}
+                        >
+                          <p className="text-xs text-gray-600">Fecha Inicio</p>
+                          <p className="text-gray-900 text-sm">
+                            {new Date(gestion.fecha_inicio).toLocaleDateString(
+                              "es-ES",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
+                          </p>
+                        </div>
+                        <div
+                          className="bg-white/50 p-2"
+                          style={{ borderRadius: "6px" }}
+                        >
+                          <p className="text-xs text-gray-600">Fecha Fin</p>
+                          <p className="text-gray-900 text-sm">
+                            {new Date(gestion.fecha_fin).toLocaleDateString(
+                              "es-ES",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
+        </div>
+      </div>
+
       <ToastContainer />
       <HorarioList />
       <EditHorario />

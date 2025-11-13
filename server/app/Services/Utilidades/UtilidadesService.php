@@ -17,7 +17,7 @@ class UtilidadesService
             ->map(function ($gestion) {
                 return [
                     'id_gestion' => $gestion->id_gestion,
-                    'nombre' => $gestion->nombre_gestion, // usa el accessor
+                    'nombre' => $gestion->descripcion, 
                     'fecha_inicio' => $gestion->fecha_inicio->toDateString(),
                     'fecha_fin' => $gestion->fecha_fin->toDateString(),
                 ];

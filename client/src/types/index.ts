@@ -45,6 +45,8 @@ import {
   AsignacionesListResponseSchema,
   AsignacionMutationResponseSchema,
   ConflictosResponseSchema,
+  FiltrosAplicadosAsignacionesSchema,
+  AsignacionesListDataSchema,
 } from "../utils/asignacion-schemas";
 import type {
   FiltrosAplicadosSchema,
@@ -75,6 +77,8 @@ import type {
 } from "../utils/stats-schema";
 import type { CreateSuplenciaDataSchema, DeleteSuplenciaResponseSchema, FiltrosAplicadosSuplenciasSchema, SuplenciaResponseSchema, SuplenciaSchema, SuplenciasListResponseSchema, UpdateSuplenciaDataSchema } from "../utils/suplencias-schemas";
 import type { AsistenciaDocenteSchema, AsistenciaResponseSchema, EvidenciaAsistenciaSchema, RegistrarAsistenciaPresencialSchema, RegistrarAsistenciaVirtualSchema } from "../utils/asistencia-schemas";
+import type { DocenteLiteSchema, DocentesListDataSchema, DocentesListPagResponseSchema, EstadisticasGestionResponseSchema, EstadisticasGestionSchema, FiltrosAplicadosDocentesSchema, FiltrosAplicadosGruposSchema, GestionAcademicaSchema, GrupoMateriaLiteSchema, GruposListDataSchema, GruposListPagResponseSchema, ListaSemestresResponseSchema } from "../utils/consulta-gestion-schemas";
+import type { EstadisticasGlobalesResponseSchema, EstadisticasPorAsignacionResponseSchema } from "../utils/supervision-schemas";
 
 // ------ TIPOS INFERIDOS ------
 export type Usuario = z.infer<typeof UsuarioSchema>;
@@ -210,6 +214,11 @@ export type AsignacionMutationResponse = z.infer<
   typeof AsignacionMutationResponseSchema
 >;
 export type ConflictosResponse = z.infer<typeof ConflictosResponseSchema>;
+
+export type FiltrosAplicadosAsignaciones = z.infer<
+  typeof FiltrosAplicadosAsignacionesSchema
+>;
+export type AsignacionesListData = z.infer<typeof AsignacionesListDataSchema>;
 
 // Tipos para los datos anidados
 export type DetalleHorarioInput = {
@@ -377,3 +386,41 @@ export type EvidenciaAsistencia = z.infer<typeof EvidenciaAsistenciaSchema>;
 export type AsistenciaResponse = z.infer<typeof AsistenciaResponseSchema>;
 export type RegistrarAsistenciaPresencial = z.infer<typeof RegistrarAsistenciaPresencialSchema>;
 export type RegistrarAsistenciaVirtual = z.infer<typeof RegistrarAsistenciaVirtualSchema>;
+
+
+
+// ============================================
+// CONSULTA GESTION
+// ============================================
+// -- gestiones --
+export type GestionAcademica = z.infer<typeof GestionAcademicaSchema>;
+export type ListaSemestresResponse = z.infer<typeof ListaSemestresResponseSchema>;
+// -- estats --
+export type EstadisticasGestion = z.infer<typeof EstadisticasGestionSchema>;
+export type EstadisticasGestionResponse = z.infer<typeof EstadisticasGestionResponseSchema>;
+
+// === Docentes
+export type DocenteLite = z.infer<typeof DocenteLiteSchema>;
+export type FiltrosAplicadosDocentes = z.infer<typeof FiltrosAplicadosDocentesSchema>;
+export type DocentesListData = z.infer<typeof DocentesListDataSchema>;
+export type DocentesListPagResponse = z.infer<typeof DocentesListPagResponseSchema>;
+
+// === Grupos/Materias
+export type GrupoMateriaLite = z.infer<typeof GrupoMateriaLiteSchema>;
+export type FiltrosAplicadosGrupos = z.infer<typeof FiltrosAplicadosGruposSchema>;
+export type GruposListData = z.infer<typeof GruposListDataSchema>;
+export type GruposListPagResponse = z.infer<typeof GruposListPagResponseSchema>;
+
+
+
+// ============================================
+// SUPERVISION ASISTENCIA
+// ============================================
+export type EstadisticasGlobalesResponse = z.infer<
+  typeof EstadisticasGlobalesResponseSchema
+>;
+
+// Por asignación
+export type EstadisticasAsignacionResponse = z.infer<
+  typeof EstadisticasPorAsignacionResponseSchema
+>;

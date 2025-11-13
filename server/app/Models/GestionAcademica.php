@@ -19,6 +19,7 @@ class GestionAcademica extends Model
         'semestre',
         'fecha_inicio',
         'fecha_fin',
+        'estado',
     ];
 
     protected $casts = [
@@ -26,6 +27,7 @@ class GestionAcademica extends Model
         'fecha_fin' => 'date',
         'anio' => 'integer',
         'semestre' => 'integer',
+        'estado' => 'string',
     ];
 
     // RELACIONES

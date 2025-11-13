@@ -4,6 +4,7 @@ import {
   AlertCircle,
   Building2,
   ClipboardCheck,
+  ClipboardList,
   UserCheck,
 } from "lucide-react";
 import { useAppStore } from "../../../stores/useAppStore";
@@ -162,26 +163,46 @@ function ControlDocente() {
         </div>
 
         {/* Botón Suplencias Docentes */}
-        <button
-          onClick={() => navigate("/control-docente/gestionar-suplencias")}
-          className="bg-[#226c8f] p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-pointer"
-          style={{ borderRadius: "8px" }}
-        >
-          <div className="flex flex-col items-center gap-4 h-full justify-center">
-            <div
-              className="p-4 bg-white/20 group-hover:bg-white/30 transition-all"
-              style={{ borderRadius: "8px" }}
-            >
-              <ClipboardCheck className="w-12 h-12 text-white" />
+        <div className="flex flex-col gap-6">
+          <button
+            onClick={() => navigate("/control-docente/gestionar-suplencias")}
+            className="bg-[#226c8f] p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-pointer"
+            style={{ borderRadius: "8px" }}
+          >
+            <div className="flex flex-col items-center gap-4 h-full justify-center">
+              <div
+                className="p-4 bg-white/20 group-hover:bg-white/30 transition-all"
+                style={{ borderRadius: "8px" }}
+              >
+                <ClipboardCheck className="w-12 h-12 text-white" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-white text-xl mb-2">Suplencias Docentes</h3>
+                <p className="text-white/80 text-sm">
+                  Gestiona las suplencias del personal
+                </p>
+              </div>
             </div>
-            <div className="text-center">
-              <h3 className="text-white text-xl mb-2">Suplencias Docentes</h3>
-              <p className="text-white/80 text-sm">
-                Gestiona las suplencias del personal
-              </p>
+          </button>
+          <button
+            onClick={() => navigate("/control-docente/supervision-asistencia")}
+            className="bg-[#226c8f] p-8 shadow-lg border border-[#226c8f] transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-pointer"
+            style={{ borderRadius: "8px" }}
+          >
+            <div className="flex flex-col items-center gap-3">
+              <div
+                className="p-3 bg-white/20 group-hover:bg-white/30 transition-all"
+                style={{ borderRadius: "8px" }}
+              >
+                <ClipboardList className="w-10 h-10 text-white" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-white mb-1">Supervisión de Asistencias</h3>
+                <p className="text-white/80 text-xs">Control de asistencias</p>
+              </div>
             </div>
-          </div>
-        </button>
+          </button>
+        </div>
       </div>
 
       {/* Fila inferior: Dos cartas lado a lado */}

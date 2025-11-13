@@ -1,5 +1,5 @@
 import { z } from "zod";
-
+import { PaginacionSchema } from "./controldocente-schemas"; 
 // ========== ESQUEMAS AUXILIARES ==========
 const DocenteSchema = z.object({
   codigo_docente: z.string(),
@@ -66,12 +66,8 @@ export const AsignacionSchema = z.object({
   detalles_horario: z.array(DetalleHorarioSchema),
 });
 
-// ========== ESQUEMAS DE RESPUESTAS ==========
-export const AsignacionesListResponseSchema = z.object({
-  ok: z.boolean(),
-  message: z.string(),
-  data: z.array(AsignacionSchema).nullable(),
-});
+
+
 
 export const AsignacionMutationResponseSchema = z.object({
   ok: z.boolean(),
@@ -153,3 +149,24 @@ export const CreateAsignacionSchema = z.object({
 });
 
 export const UpdateAsignacionSchema = CreateAsignacionSchema;
+
+// ========== ESQUEMAS PARA LISTA PAGINADA ==========
+
+export const FiltrosAplicadosAsignacionesSchema = z.object({
+  id_gestion: z.number().nullable(),
+  nombre_docente: z.string().nullable(),
+  semestre: z.number().nullable(),
+});
+
+export const AsignacionesListDataSchema = z.object({
+  asignaciones: z.array(AsignacionSchema),
+  paginacion: PaginacionSchema,
+  filtros_aplicados: FiltrosAplicadosAsignacionesSchema,
+});
+
+// ========== ESQUEMAS DE RESPUESTAS ==========
+export const AsignacionesListResponseSchema = z.object({
+  ok: z.boolean(),
+  message: z.string(),
+  data: AsignacionesListDataSchema.nullable(), // 🔹 antes era array simple
+});

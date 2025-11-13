@@ -16,7 +16,13 @@ use App\Http\Controllers\Api\Auth\UserProfileController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\Estadisticas\EstadisticasController;
 use App\Http\Controllers\Api\AsistenciaDocente\AsistenciaDocenteController;
-
+use App\Http\Controllers\Api\ConsultaGestion\GestionController;
+use App\Http\Controllers\Api\ConsultaGestion\EstadisticaController;
+use App\Http\Controllers\Api\ConsultaGestion\DocenteController;
+use App\Http\Controllers\Api\ConsultaGestion\GrupoMateriaController;
+use App\Http\Controllers\Api\ConsultaGestion\AsignacionReporteController;
+use App\Http\Controllers\Api\SupervisionAsistencias\EstadisticaSupAsistenciaController;
+use App\Http\Controllers\Api\SupervisionAsistencias\AsignacionSupAsistenciaController;
 
 
 use App\Http\Controllers\Api\Bitacora\BitacoraController;
@@ -37,6 +43,17 @@ Route::prefix('auth')->group(function () {
     Route::post('/forgot-password', [PasswordResetController::class, 'reset']);
     Route::put('/update-personal-info/{id}', [UserProfileController::class, 'updatePersonalInfo']);
     Route::put('/update-password/{id}', [UserProfileController::class, 'updatePassword']);
+});
+
+Route::prefix('consulta-gestion')->group(function () {
+    Route::get('/semestres', [GestionController::class, 'listarSemestres']);
+    Route::get('/{id_gestion}/estadisticas', [EstadisticaController::class, 'obtenerEstadisticas']);
+    Route::get('/{id_gestion}/docentes', [DocenteController::class, 'index']);
+    Route::get('/{id_gestion}/grupos', [GrupoMateriaController::class, 'index']);
+    Route::get('/{id_gestion}/docentes/reporte', [DocenteController::class, 'generarReporte']);
+    Route::get('/{id_gestion}/grupos/reporte', [GrupoMateriaController::class, 'generarReporte']);
+    Route::get('/{id_gestion}/asignaciones/reporte', [AsignacionReporteController::class, 'generarReporte']);
+    Route::get('/{id_gestion}/asignaciones/reporte-pdf', [AsignacionReporteController::class, 'generarReportePDF']);
 });
 
 // ==========================================
@@ -159,6 +176,28 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/virtual', [AsistenciaDocenteController::class, 'registrarVirtual'])
             ->name('asistencias.virtual');
     });
+
+
+    Route::prefix('supervision-asistencias')->group(function () {
+        Route::get('/estadisticas/{id_gestion?}', [EstadisticaSupAsistenciaController::class, 'obtenerEstadisticas']);
+    });
+
+    Route::prefix('supervision-asistencias')->group(function () {
+
+        Route::get(
+            '/estadisticas/{id_gestion?}',
+            [EstadisticaSupAsistenciaController::class, 'obtenerEstadisticas']
+        );
+
+        Route::get(
+            '/asignacion/{id_asignacion}',
+            [AsignacionSupAsistenciaController::class, 'obtenerDetalle']
+        );
+    });
+
+
+
+
 
 
     Route::post('/qr/generar', [QrController::class, 'generar']);

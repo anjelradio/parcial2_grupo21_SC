@@ -11,6 +11,8 @@ import GestionarSolicitudes from "../pages/Shared/ControlDocente/views/Gestionar
 import InicioDocente from "../pages/Docente/Inicio/InicioDocente";
 import CameraScanner from "../pages/Docente/Camera/CameraScanner";
 import AsistenciasDocente from "../pages/Docente/Asistencias/AsistenciasDocente";
+import ConsultaGestion from "../pages/Shared/GestionAcademica/views/ConsultaGestion/ConsultaGestion";
+import SupervisionAsistencia from "../pages/Shared/ControlDocente/views/SupervisionAsistencia/SupervisionAsistencia";
 
 // Page Login
 const Login = lazy(() => import("../pages/Autenticacion/Login"));
@@ -208,6 +210,15 @@ function AppRouter() {
                 </Suspense>
               }
             />
+
+            <Route
+              path="consulta-gestion"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <ConsultaGestion />
+                </Suspense>
+              }
+            />
           </Route>
 
           <Route path="control-docente">
@@ -234,6 +245,14 @@ function AppRouter() {
               element={
                 <Suspense fallback={<Loading />}>
                   <GestionarPermisos />
+                </Suspense>
+              }
+            />
+            <Route
+              path="supervision-asistencia"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <SupervisionAsistencia />
                 </Suspense>
               }
             />

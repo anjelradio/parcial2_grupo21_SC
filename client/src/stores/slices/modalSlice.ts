@@ -23,7 +23,8 @@ export type ModalName =
   | "editSuplencia"
   | "deleteSuplencia"
   | "asistenciaVirtualModal"
-  | "cameraScanner";
+  | "cameraScanner"
+  | "asistenciasModal";
 
 export type ModalSliceType = {
   modals: Record<ModalName, boolean>;
@@ -59,7 +60,8 @@ export const createModalSlice: StateCreator<ModalSliceType> = (set, get) => ({
     editSuplencia: false,
     deleteSuplencia: false,
     asistenciaVirtualModal: false,
-    cameraScanner: false
+    cameraScanner: false,
+    asistenciasModal: false
   },
   anyModalOpen: false,
   setModal: (modal, open) => {

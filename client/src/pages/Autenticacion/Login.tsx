@@ -140,7 +140,8 @@ function Login() {
             <div className="mb-12">
               <p
                 className="text-white text-xs md:text-base tracking-[0.25em] mb-3 opacity-90"
-                style={{ fontFamily: "Georgia, serif", fontWeight: 300 }}
+                 style={{ fontFamily: "Georgia, serif", fontWeight: 300  }}
+                // style={{ fontFamily: "Merriweather, serif", fontStyle:"normal" }}
               >
                 Facultad de Ingeniería
               </p>
@@ -165,7 +166,7 @@ function Login() {
                 backgroundColor: "rgba(0, 0, 0, 0.55)",
               }}
             >
-              <h2 className="text-white text-xl mb-6">Iniciar Sesión</h2>
+              <h2 className="text-white text-xl mb-6" style={{ fontFamily: "Georgia, serif", fontWeight: 300  }}>Iniciar Sesión</h2>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 {/* Input unificado: Código o Email */}
@@ -259,7 +260,7 @@ function Login() {
         </div>
 
         {/* Footer Section */}
-        <footer className="mt-auto relative">
+        <footer className="mt-auto relative" style={{ fontFamily: "Rufina, serif", fontStyle:"normal" }}>
           {/* Degradado sutil desde transparente hasta negro */}
           <div
             className="absolute inset-0"
@@ -271,31 +272,31 @@ function Login() {
 
           {/* Línea divisora */}
           <div className="relative z-10 flex justify-center pt-8">
-            <div className="w-[80%] border-t-2 border-white/40"></div>
+            <div className="w-[80%] border-t-2 border-white/40" ></div>
           </div>
 
           <div className="relative z-10 container mx-auto px-8 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
             {/* Atención y Soporte */}
             <div className="text-center text-white space-y-3">
-              <h3 className="tracking-widest mb-4 opacity-90">
+              <h3 className="tracking-widest mb-4 opacity-90" >
                 ATENCIÓN Y SOPORTE
               </h3>
-              <p className="text-sm opacity-80">Tel: +591 6444731</p>
-              <p className="text-sm opacity-80">
+              <p className="text-sm opacity-80" style={{ fontFamily: "Merriweather, serif", fontStyle:"normal" }}>Tel: +591 6444731</p>
+              <p className="text-sm opacity-80" >
                 Email: soporte@facultad.edu.bo
               </p>
             </div>
 
             {/* Desarrollado Por */}
             <div className="text-center text-white space-y-3">
-              <h3 className="tracking-widest mb-4 opacity-90">
+              <h3 className="tracking-widest mb-4 opacity-90" >
                 DESARROLLADO POR
               </h3>
               <div className="space-y-2">
-                <p className="text-sm opacity-90">
+                <p className="text-sm opacity-90" >
                   Ing. R. Anjel Santos Castro - anjel.santos@dev.com
                 </p>
-                <p className="text-sm opacity-90">
+                <p className="text-sm opacity-90" >
                   Ing. Luciana P. Aradivi Mamani - luciana.aradivi@dev.com
                 </p>
               </div>

@@ -8,6 +8,8 @@ use App\Http\Requests\Asignaciones\UpdateAsignacionRequest;
 use App\Services\Asignaciones\AsignacionService;
 use App\Traits\ApiResponse;
 
+use Illuminate\Http\Request;
+
 class AsignacionController extends Controller
 {
     use ApiResponse;
@@ -22,15 +24,25 @@ class AsignacionController extends Controller
     /**
      * Listar todas las asignaciones
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $asignaciones = $this->asignacionService->getAll();
-            return $this->success($asignaciones, 'Asignaciones obtenidas correctamente');
+            $filters = [
+                'page' => $request->query('page', 1),
+                'page_size' => $request->query('page_size', 20),
+                'id_gestion' => $request->query('id_gestion'),
+                'nombre_docente' => $request->query('nombre_docente'),
+                'semestre' => $request->query('semestre'),
+            ];
+
+            $data = $this->asignacionService->getAllPaginated($filters);
+
+            return $this->success($data, 'Asignaciones obtenidas correctamente');
         } catch (\Exception $e) {
             return $this->error('Error al obtener asignaciones: ' . $e->getMessage(), 500);
         }
     }
+
 
     /**
      * Crear nueva asignación

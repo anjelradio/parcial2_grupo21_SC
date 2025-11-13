@@ -4,6 +4,7 @@ namespace App\Services\Asignaciones;
 
 use App\Models\Asignacion;
 use App\Models\DetalleHorario;
+use App\Models\GestionAcademica;
 use App\Services\Bitacora\BitacoraService;
 use Illuminate\Support\Facades\DB;
 
@@ -29,11 +30,11 @@ class AsignacionService
             'detallesHorario.bloque:id_bloque,hora_inicio,hora_fin',
             'detallesHorario.aula:nro_aula,tipo,capacidad'
         ])
-        ->orderBy('id_asignacion', 'desc')
-        ->get()
-        ->map(function ($asignacion) {
-            return $this->formatAsignacionData($asignacion);
-        });
+            ->orderBy('id_asignacion', 'desc')
+            ->get()
+            ->map(function ($asignacion) {
+                return $this->formatAsignacionData($asignacion);
+            });
     }
 
     /**
@@ -170,8 +171,8 @@ class AsignacionService
             'codigo_docente' => $asignacion->codigo_docente,
             'docente' => $asignacion->docente ? [
                 'codigo_docente' => $asignacion->docente->codigo_docente,
-                'nombre_completo' => $asignacion->docente->user ? 
-                    trim("{$asignacion->docente->user->nombre} {$asignacion->docente->user->apellido_paterno} {$asignacion->docente->user->apellido_materno}") : 
+                'nombre_completo' => $asignacion->docente->user ?
+                    trim("{$asignacion->docente->user->nombre} {$asignacion->docente->user->apellido_paterno} {$asignacion->docente->user->apellido_materno}") :
                     'Desconocido',
                 'profesion' => $asignacion->docente->profesion,
             ] : null,
@@ -238,5 +239,108 @@ class AsignacionService
             : 'N/A';
 
         return "{$materia} Grupo {$grupo} - {$docente} (Gestión {$gestion})";
+    }
+
+    public function getAllPaginated(array $filters = [])
+    {
+        $page = $filters['page'] ?? 1;
+        $pageSize = $filters['page_size'] ?? 20;
+
+        $nombreDocente = strtolower(trim($filters['nombre_docente'] ?? ''));
+        $idGestion = $filters['id_gestion'] ?? null;
+        $semestre = $filters['semestre'] ?? null;
+
+        // --------------------------
+        // 1. DETERMINAR GESTIÓN ACTIVA
+        // --------------------------
+        if ($idGestion) {
+            $gestion = GestionAcademica::find($idGestion);
+        } else {
+            // Gestión activa por fechas ← igual que PermisosDocente
+            $gestion = GestionAcademica::where('fecha_inicio', '<=', now())
+                ->where('fecha_fin', '>=', now())
+                ->first();
+        }
+
+        // Si no existe gestión vigente → devolver vació
+        if (!$gestion) {
+            return [
+                'asignaciones' => [],
+                'paginacion' => [
+                    'total_registros' => 0,
+                    'total_paginas' => 0,
+                    'pagina_actual' => 1,
+                    'registros_por_pagina' => $pageSize,
+                    'tiene_siguiente' => false,
+                    'tiene_anterior' => false,
+                ],
+                'filtros_aplicados' => [
+                    'id_gestion' => null,
+                    'nombre_docente' => $nombreDocente ?: null,
+                    'semestre' => $semestre
+                ]
+            ];
+        }
+
+        // --------------------------
+        // 2. QUERY BASE
+        // --------------------------
+        $query = Asignacion::with([
+            'docente.user',
+            'grupo.materia',
+            'gestion',
+            'detallesHorario.dia',
+            'detallesHorario.bloque',
+            'detallesHorario.aula'
+        ])
+            ->where('id_gestion', $gestion->id_gestion);
+
+        // --------------------------
+        // 3. FILTROS
+        // --------------------------
+
+        if (!empty($nombreDocente)) {
+            $query->whereHas('docente.user', function ($q) use ($nombreDocente) {
+                $q->whereRaw(
+                    "LOWER(CONCAT(nombre,' ',apellido_paterno,' ',apellido_materno)) LIKE ?",
+                    ["%{$nombreDocente}%"]
+                );
+            });
+        }
+
+        if (!empty($semestre)) {
+            $query->whereHas('gestion', function ($q) use ($semestre) {
+                $q->where('semestre', $semestre);
+            });
+        }
+
+        // --------------------------
+        // 4. PAGINACIÓN MANUAL
+        // --------------------------
+        $totalRegistros = $query->count();
+        $totalPaginas = ceil($totalRegistros / $pageSize);
+
+        $asignaciones = $query->orderBy('id_asignacion', 'desc')
+            ->skip(($page - 1) * $pageSize)
+            ->take($pageSize)
+            ->get()
+            ->map(fn($a) => $this->formatAsignacionData($a));
+
+        return [
+            'asignaciones' => $asignaciones,
+            'paginacion' => [
+                'total_registros' => $totalRegistros,
+                'total_paginas' => $totalPaginas,
+                'pagina_actual' => (int)$page,
+                'registros_por_pagina' => (int)$pageSize,
+                'tiene_siguiente' => $page < $totalPaginas,
+                'tiene_anterior' => $page > 1,
+            ],
+            'filtros_aplicados' => [
+                'id_gestion' => $gestion->id_gestion,
+                'nombre_docente' => $nombreDocente ?: null,
+                'semestre' => $semestre
+            ]
+        ];
     }
 }

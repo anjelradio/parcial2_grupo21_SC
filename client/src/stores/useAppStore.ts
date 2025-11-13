@@ -54,6 +54,14 @@ import {
   createAsistenciaSlice,
   type AsistenciaSliceType,
 } from "./slices/AsistenciaDocente/asistenciaSlice";
+import {
+  createConsultaGestionSlice,
+  type ConsultaGestionSliceType,
+} from "./slices/consultaGestion/consultaGestionSlice";
+import {
+  createSupervisionSlice,
+  type SupervisionSliceType,
+} from "./slices/supervisionAsistencia/supervisionSlice";
 
 export const useAppStore = create<
   AuthSliceType &
@@ -70,7 +78,9 @@ export const useAppStore = create<
     UtilsSliceType &
     EstadisticasSliceType &
     SuplenciasSliceType &
-    AsistenciaSliceType
+    AsistenciaSliceType &
+    ConsultaGestionSliceType &
+    SupervisionSliceType
 >()(
   devtools(
     persist(
@@ -89,7 +99,9 @@ export const useAppStore = create<
         ...createUtilsSlice(...a),
         ...createEstadisticasSlice(...a),
         ...createSuplenciasSlice(...a),
-        ...createAsistenciaSlice(...a)
+        ...createAsistenciaSlice(...a),
+        ...createConsultaGestionSlice(...a),
+        ...createSupervisionSlice(...a),
       }),
       {
         name: "app-store",
